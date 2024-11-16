@@ -15,6 +15,7 @@ private:
     int capacity; 
     string status;
     string overheadBinSpace[118]; //Array in which each element is a bagID
+    //NEEDS STACK FOR CHECKED BAGS ON THE FLIGHT 
 
 public:
     Flight(const string &flight, const string &departure, const string &destination, const chrono::system_clock::time_point &dtime, const chrono::system_clock::time_point &atime,
@@ -29,7 +30,7 @@ public:
     string getStatus();
     string getOverheadBin();
     int overheadBinSpace();
-
+    void assignBagToFlight(Bag& bag); //NOT IN CPP
     void setStatus(string newstatus);
     void updateOverheadBin(string bagIDAdded);
     void displayFlightInfo();
