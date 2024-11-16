@@ -12,6 +12,4 @@ bool Employee::login(string pass){
     return false;
 }
 
-void Employee::greeting(){
-    cout << "Hello, " << employeeName << ". I hope you are having a good day."
-}
+void Employee::greeting(){cout << "Hello, " << employeeName << ". I hope you are having a good day."}

@@ -16,6 +16,7 @@ public:
     Employee(string name, string user, string pass);
     bool login(string user, string pass);
     void greeting();
+    //NOTHING BELOW IS IN CPP
     void viewBagDetails(int bagID)
     void updateFlightBagsStatus(string flightID, string status)
     void addBagToUnclaimedList(int bagID)
