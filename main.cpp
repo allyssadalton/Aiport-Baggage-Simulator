@@ -121,6 +121,92 @@ class LinkedList{
     }
 }
 
+class Stacks{
+    private:
+    Node* top;
+    
+    public: 
+    StackedList(){top = nullptr;}
+
+    ~StackedList() {
+        while (!isEmpty()) {pop();}
+    }   
+
+    bool isEmpty(){return top == nullptr;}
+
+    void push(int value) {
+        Node* newNode = new Node(value);
+        newNode -> next = top;
+        top = newNode;
+    }
+
+    string pop() {
+        if (isEmpty()) {return "Empty";}
+        int poppedValue = top -> value;
+        Node* temp = top;
+        top = top -> next;
+        delete temp;
+        return poppedValue;
+    }
+
+    string peek() {
+        if (isEmpty()) {return "Empty";}
+        return top -> value;
+    }   
+}
+
+class Queues{
+    private:
+    Node* head;
+    Node* tail;
+    
+    public: 
+    Queue() {
+        head = nullptr; 
+        tail = nullptr;  
+        size = 0;       
+    }
+
+    ~Queue() {
+        while(!isEmpty()){dequeue();}
+    }
+
+    void enqueue(string bagID) {
+        Node* newNode = new Node(bagID);
+        if (isEmpty()){
+            head = newNode;
+            tail = newNode;
+        } 
+        else{
+            tail -> next = newNode;   
+            tail = newNode;        
+        }
+        size++;
+    }
+
+    string dequeue() {
+        if (isEmpty()){return "Empty";}
+        string bagID = head -> bagID; 
+        Node* temp = head;       
+        head = head -> next;    
+        delete temp; 
+        temp = nullptr;            
+        size--;
+        if (isEmpty()){tail = nullptr;} 
+        return bagID; 
+    }
+
+    bool isEmpty() {return size == 0;}
+
+    string peek() {
+        if (isEmpty()) {return "";}
+        return head -> bagID; 
+    }
+
+    int getSize() {return size;}
+}
+
+
 class Bags{
     private: 
     string overheadBinArray[118]; //array to keep track of bags in overhead bins
@@ -130,17 +216,13 @@ class Bags{
     LinkedList priorityBagList;
     LinkedList carryOns; //holds all the bags that've been registered as carryons
     LinkedList checkedInBags; //holds all the bags that've been checked in 
-
-    //priorityqueue
-    //regularqueue
-    //onplanestack
-
-
+    Stacks onPlaneStack; //holds all the bags that've been placed on under plane
+    Queues priorityQueue; //queue for checkedin bags that have priority
+    Queues regularQueue; //queue for checkedin bags that don't have priority
     
     public:
     //status update
     //check for connecting flight
-
 
     void checkIn(){//may or may not be done
         string bag;
@@ -185,15 +267,18 @@ class Bags{
         }
     }
 
-    void addToPriorityQueue(string bagID){ //not done
+    void addToPriorityQueue(string bagID){ //done
+        priorityQueue.enqueue(bagID);
         updateStatus("Priority Queue")
     }
 
-    void addToRegularQueue(string bagID){ //not done
+    void addToRegularQueue(string bagID){ //done
+        regularQueue.enqueue(bagID);
         updateStatus("Regular Checked Bag Queue")
     }
 
-    void addToCheckedBagsLoadedOnPlaneStack(string bagID){ //not done
+    void addToCheckedBagsLoadedOnPlaneStack(string bagID){ // done
+        onPlaneStack.push(bagID);
         updateStatus("On Plane")
     }
     
