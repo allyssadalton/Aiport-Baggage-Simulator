@@ -1,0 +1,271 @@
+#include <iostream>
+#include <string> 
+
+using namespace std;
+
+class Node{
+    public:
+    string val;
+    Node* next;
+
+    Node(string value){
+        val = value;
+        next = nullptr;
+    }
+}
+
+class LinkedList{
+    private:
+    Node* head;
+    Node* tail;
+
+    public:
+    LinkedList(){ //done
+        head = nullptr;
+        tail = nullptr;
+    }
+
+    ~LinkedList(){ //done
+        Node* curr = head;
+        while (curr != nullptr){
+            Node* temp = curr -> next;
+            delete curr;
+            curr = nullptr;
+            curr = temp;
+            
+        }
+
+    }
+    bool checkInList(string value){//done
+        Node* curr = head;
+        Node* val = Node(value);
+        while (curr -> next != nullptr){
+            if (curr -> next == val){return true;}
+            else{continue;}
+        }
+        return false;
+    }
+
+    void addToListEnd(string value){ //done
+        Node* newNode = new Node(value);
+        if (head == nullptr){
+            head = newNode;
+        }   
+        else{
+            Node* temp = head;
+            while (temp -> next != nullptr){
+                temp = temp -> next;
+            }
+            temp = newNode();
+        }
+
+    }
+
+    void removeBagFromList(string bagID){ //done
+        Node* bag = Node(bagID);
+        if (head == nullptr){
+            cout << "Bag not in database. " << endl;
+            return;
+        }
+        else{
+            Node* temp = head;
+            if (checkInList(bagID)){
+                while (temp != bag && temp -> next != nullptr){
+                    temp = temp -> next;
+                    if (temp == bag){
+                        delete temp;
+                        temp = null;
+                    }
+                }
+            }
+            else{
+                cout << "Bag not in database. " << endl;
+                return;
+            }
+        }
+    }
+
+    void removeUserFromList(string user){ //done
+        Node* username = Node(user);
+        if (head == nullptr){
+            cout << "User not in database. " << endl;
+            return;
+        }
+        else{
+            Node* temp = head;
+            if (checkInList(user)){
+                while (temp != username && temp -> next != nullptr){
+                    temp = temp -> next;
+                    if (temp = username){
+                        delete temp -> next;
+                        temp -> next = null;
+                        delete temp;
+                        temp = null;
+                    }
+                }
+            }
+            else{
+                cout << "User not in database. " << endl;
+                return;
+            }
+        }
+    }
+}
+
+class AirportEmployeeUI{
+    private:
+    LinkedList employeeLogins;
+    public: 
+    bool login(string user, string pass){//done
+        if (checkInList(user)) && checkInList(pass)){return true;}
+        else(return false;)
+    } 
+    void removeUser(string user){//done
+        if (user == "ADMIN"){
+            cout << "You can't remove the admin user." << endl;
+            return;
+        }
+        else{
+            if (checkInList(user)){
+                string reponse;
+                cout << "Are you sure you want to remove user: " << user << "? Enter Y or N: " << endl;
+                while (true){
+                    cin >> reponse;
+                    if (reponse == "Y" or "y"){
+                        employeeLogins.removeUserFromList(user);
+                        cout << "User: " << user << " has been removed."
+                    }
+                    if (reponse == "N" or "n"){
+                        cout << "Okay!" << endl;
+                        return;
+                    }
+                    else(
+                        cout << "Your reponse is invalid. Please enter Y or N: " << endl;
+                    )
+                }
+            }
+            else{
+                cout << "User " << user << " is not in the database. " << endl;
+            }
+        }
+    }
+    void addUser(string user, string pass){
+        employeeLogins.addToListEnd(user);
+        employeeLogins.addToListEnd(pass);
+    } //done
+    void showMenu(){//not done
+        cout << "-----Employee Interface-----" << endl;
+        cout << "1. " << endl;
+        cout << "2. " << endl;
+        cout << "3. " << endl;
+        cout << "4. " << endl;
+        cout << "5. " << endl;
+        cout << "6. " << endl;
+        cout << "7. " << endl;
+        cout << "8. " << endl;
+        cout << "9. " << endl;
+
+    }
+    void menuReponse(){//not done
+        string answer;
+        cout << "Enter the menu number for the item in which you are wanting to access"
+    }
+    void showAdminMenu(){//not done
+        cout << "-----Admin Interface-----" << endl;
+        cout << "1. Add employee user" << endl;
+        cout << "2. " << endl;
+        cout << "3. " << endl;
+        cout << "4. " << endl;
+        cout << "5. " << endl;
+        cout << "6. " << endl;
+        cout << "7. " << endl;
+        cout << "8. " << endl;
+        cout << "9. " << endl;
+    }
+    void adminMenuReponse(){ //not done
+        string answer;
+        cout << "Enter the menu number for the item in which you are wanting to access"
+    }
+}
+
+
+class PassengerUI{
+    //Boarding ID 2d array
+    //log in using boarding ID
+    //show menu
+    //select thing 
+}
+
+class Bags{
+    private: 
+    string overheadBinArray[118]; //array to keep track of bags in overhead bins
+    //priorityqueue
+    //regularqueue
+    //onplanestack
+
+
+    
+    public:
+    //status update
+    //Check-in simulation
+    //TSA Carry on Security Simulation
+    //Checked Bags Security Simulation
+    //Baggage Carousel Linked List
+    //Baggage Carousel 
+    //check for connecting flight
+
+
+    bool priorityStatus(string bagID){//finish how it will be classified as priority
+        if (priority){
+            addToPriorityQueue(bagID)
+        }
+        if (!priority){
+            addToRegularQueue(bagID)
+        }
+    }
+    void addToPriorityQueue(string bagID){ //not done
+        updateStatus("Priority Queue")
+    }
+    void addToRegularQueue(string bagID){ //not done
+        updateStatus("Regular Checked Bag Queue")
+    }
+    void addToCheckedBagsLoadedOnPlaneStack(string bagID){ //not done
+        updateStatus("On Plane")
+    }
+
+    void CarryOnBagSecurityCheck(string bagID){}
+
+    void CheckedBagSecurityCheck(string bagID){}
+    
+    bool overheadBinSpace(){
+        if (overheadBinArray[117] != null){return false;}
+        else{return true;}
+    }
+    void addBagToOverheadBin(string bagID){ //if overhead bin space is full needs finished
+        if (overheadBinSpace()){
+            for (int i = 0; i < 118; i++){
+                if (overheadBinArray[i] == null){
+                    overheadBinArray[i] = bagID;
+                }
+                else{continue;}
+            }
+        }
+        else if (!overheadBinSpace()){
+            cout << "There's no space. A flight attendent is coming to get your bag so it can be checked." endl;
+            //add bagID to checked bag stack
+        }
+    }
+
+    void updateStatus(string newLocation){
+    }
+}
+
+
+
+
+int main(){
+    AirportEmployeeUI employeeUI;
+    employeeUI.addUser("ADMIN", "Pass123") //creates admin account
+
+    return 0;
+}
