@@ -14,7 +14,7 @@ class Node{
         val = value;
         next = nullptr;
     }
-}
+};
 
 class LinkedList{
     private:
@@ -47,9 +47,9 @@ class LinkedList{
 
     bool checkInList(string value){//done
         Node* curr = head;
-        Node* val = Node(value);
+        //Node* val = Node(value);
         while (curr -> next != nullptr){
-            if (curr -> next == val){return true;}
+            if (curr -> next == value){return true;}
             else{continue;}
         }
         return false;
@@ -65,13 +65,13 @@ class LinkedList{
             while (temp -> next != nullptr){
                 temp = temp -> next;
             }
-            temp = newNode();
+            temp = newNode(value);
         }
 
     }
 
     void removeBagFromList(string bagID){ //done
-        Node* bag = Node(bagID);
+        //Node* bag = Node(bagID);
         if (head == nullptr){
             cout << "Bag not in database. " << endl;
             return;
@@ -79,11 +79,11 @@ class LinkedList{
         else{
             Node* temp = head;
             if (checkInList(bagID)){
-                while (temp != bag && temp -> next != nullptr){
+                while (temp != bagID && temp -> next != nullptr){
                     temp = temp -> next;
                     if (temp == bag){
                         delete temp;
-                        temp = null;
+                        temp = nullptr;
                     }
                 }
             }
@@ -95,7 +95,7 @@ class LinkedList{
     }
 
     void removeUserFromList(string user){ //done
-        Node* username = Node(user);
+        //Node* username = Node(user);
         if (head == nullptr){
             cout << "User not in database. " << endl;
             return;
@@ -103,13 +103,13 @@ class LinkedList{
         else{
             Node* temp = head;
             if (checkInList(user)){
-                while (temp != username && temp -> next != nullptr){
+                while (temp != user && temp -> next != nullptr){
                     temp = temp -> next;
-                    if (temp = username){
+                    if (temp = user){
                         delete temp -> next;
                         temp -> next = null;
                         delete temp;
-                        temp = null;
+                        temp = nullptr;
                     }
                 }
             }
@@ -119,16 +119,28 @@ class LinkedList{
             }
         }
     }
-}
+
+    void viewList(){
+        if (head == nullptr){cout << "List Empty." << endl;}
+        else{
+            Node* temp = head;
+            while (temp -> next != nullptr){
+                cout << temp << endl;
+                temp = temp -> next;
+            }
+            cout << temp << endl;
+        }
+    }
+};
 
 class Stacks{
     private:
     Node* top;
     
     public: 
-    StackedList(){top = nullptr;}
+    Stacks(){top = nullptr;}
 
-    ~StackedList() {
+    ~Stacks() {
         while (!isEmpty()) {pop();}
     }   
 
@@ -153,7 +165,7 @@ class Stacks{
         if (isEmpty()) {return "Empty";}
         return top -> value;
     }   
-}
+};
 
 class Queues{
     private:
@@ -204,16 +216,16 @@ class Queues{
     }
 
     int getSize() {return size;}
-}
+};
 
 
 class Bags{
     private: 
     string overheadBinArray[118]; //array to keep track of bags in overhead bins
     //might might array ^ a linked list array
-    LinkedList baggageCarousel;
-    LinkedList unclaimedBaggage;
-    LinkedList priorityBagList;
+    LinkedList baggageCarousel; //holds all luggage on baggage carousel
+    LinkedList unclaimedBaggage; //holds all unclaimed baggage
+    LinkedList priorityBagList; //holds all the bags that've been checked in as a priority bag
     LinkedList carryOns; //holds all the bags that've been registered as carryons
     LinkedList checkedInBags; //holds all the bags that've been checked in 
     Stacks onPlaneStack; //holds all the bags that've been placed on under plane
@@ -374,18 +386,27 @@ class Bags{
         addBagToUnclaimedList(string bagID)
     }
 
-    void updateStatus(string bag ID, string newLocation){ //not done
+    void updateStatus(string bagID, string newLocation){ //not done
     }
 
-    void notifyPassenger(string message){} //not done
-}
+    void viewUnclaimedList(){unclaimedBaggage.viewList();}
 
-Bags globalbags;
+    void viewCarousel(){baggageCarousel.viewList();}
+
+    void viewStatus(string bagID){
+
+    }
+    void notifyPassenger(string message){} //not done
+};
+
+
 
 class AirportEmployeeUI{
     private:
+    Bags& globalBags;
     LinkedList employeeLogins;
     public: 
+    AirportEmployeeUI(Bags& bags) : globalBags(bags) {}
     bool login(string user, string pass){//done
         if (checkInList(user)) && checkInList(pass)){return true;}
         else(return false;)
@@ -425,50 +446,120 @@ class AirportEmployeeUI{
     } //done
     void showMenu(){//not done
         cout << "-----Employee Interface-----" << endl;
-        cout << "1. " << endl;
-        cout << "2. " << endl;
-        cout << "3. " << endl;
-        cout << "4. " << endl;
-        cout << "5. " << endl;
-        cout << "6. " << endl;
-        cout << "7. " << endl;
+        cout << "1. Check in Bag(s)" << endl;
+        cout << "2. Check Bag(s) Status & Location" << endl;
+        cout << "3. Update Bag(s) Status & Location" << endl;
+        cout << "4. Update Bag(s) Type" << endl;
+        cout << "5. Add Bag(s) to Unclaimed Baggage List" << endl;
+        cout << "6. View Unclaimed Baggage List" << endl;
+        cout << "7. View Baggage Carousel" << endl;
         cout << "8. " << endl;
         cout << "9. " << endl;
 
     }
     void menuReponse(){//not done
         string answer;
-        cout << "Enter the menu number for the item in which you are wanting to access"
+        
+        cout << "Enter the menu number for the item in which you are wanting to access" << endl;
+        cin << answer;
+        if (answer == "1"){
+            int numberOfBags;
+            cout << "How many bags: " << endl;
+            cin >> numberOfBags;
+            menuOption1(numberOfBags);
+        }
+
+        else if (answer == "2"){
+            int numberOfBags;
+            cout << "How many bags: " << endl;
+            cin >> numberOfBags;
+            menuOption2(numberOfBags);
+        }
+
+        else if (answer == "3"){
+            int numberOfBags;
+            cout << "How many bags: " << endl;
+            cin >> numberOfBags;
+            menuOption3(numberOfBags);
+        }
+
+        else if (answer == "4"){
+            int numberOfBags;
+            cout << "How many bags: " << endl;
+            cin >> numberOfBags;
+            menuOption4(numberOfBags);
+        }
+
+        else if (answer == "5"){
+            int numberOfBags;
+            cout << "How many bags: " << endl;
+            cin >> numberOfBags;
+            menuOption5(numberOfBags);
+        }
+
+        else if (answer == "6"){menuOption6();}
+
+        else if (answer == "7"){menuOption7();}
     }
     void showAdminMenu(){//not done
         cout << "-----Admin Interface-----" << endl;
-        cout << "1. Add employee user" << endl;
-        cout << "2. " << endl;
-        cout << "3. " << endl;
-        cout << "4. " << endl;
-        cout << "5. " << endl;
-        cout << "6. " << endl;
-        cout << "7. " << endl;
+        cout << "1. Check in Bag(s)" << endl;
+        cout << "2. Check Bag(s) Status & Location" << endl;
+        cout << "3. Update Bag(s) Status & Location" << endl;
+        cout << "4. Update Bag(s) Type" << endl;
+        cout << "5. Add Bag(s) to Unclaimed Baggage List" << endl;
+        cout << "6. View Unclaimed Baggage List" << endl;
+        cout << "7. View Baggage Carousel" << endl;
         cout << "8. " << endl;
         cout << "9. " << endl;
     }
-    void adminMenuReponse(){ //not done
-        string answer;
-        cout << "Enter the menu number for the item in which you are wanting to access"
-    }
-}
+        
 
-class PassengerUI{
+    void menuOption1(int numberOfBags){ //done
+        for (int i = 0; i < numberOfBags; i++){globalBags.checkIn();}
+    }
+    void menuOption2(int numberOfBags){ //not done
+        for (int i = 0; i < numberOfBags; i++){}
+    }
+    void menuOption3(int numberOfBags){ //not done
+        for (int i = 0; i < numberOfBags; i++){}
+    }
+    void menuOption4(int numberOfBags){//not done
+        for (int i = 0; i < numberOfBags; i++){}
+    }
+    void menuOption5(int numberOfBags){//done?
+        string bagID;
+        for (int i = 0; i < numberOfBags; i++){
+            cout << "Please enter one Bag ID: " << endl;
+            cin >> bagID;
+            globalBags.addBagToUnclaimedList(bagID);
+            globalBags.removeBagFromCarousel(bagID);
+        }
+    }
+    void menuOption6(){globalBags.viewUnclaimedList();} // done
+    void menuOption7(){globalBags.viewCarousel();} // done
+    void menuOption8(int numberOfBags){//not done
+        for (int i = 0; i < numberOfBags; i++){}
+    }
+    void menuOption9(int numberOfBags){//not done
+        for (int i = 0; i < numberOfBags; i++){}
+    }
+};
+
+//class PassengerUI{
+    //Bags& globalBags;
     //Boarding ID 2d array
     //log in using boarding ID
     //show menu
     //select thing 
-}
+//}
 
 int main(){
     srand(time(nullptr));
-    AirportEmployeeUI employeeUI;
-    employeeUI.addUser("ADMIN", "Pass123") //creates admin account
+    Bags globalBags;
+    AirportEmployeeUI employeeUI(globalBags);
+
+    employeeUI.addUser("ADMIN", "Pass123"); //creates admin account
 
     return 0;
 }
