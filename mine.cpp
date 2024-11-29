@@ -39,7 +39,7 @@ class LinkedList{
 
     }
 
-    bool isEmpty(){
+    bool isEmpty(){ //done
         if (head == nullptr){return true;}
         else{return false;}
 
@@ -139,11 +139,10 @@ class Bags{
     
     public:
     //status update
-    //Check-in simulation
     //check for connecting flight
 
 
-    void checkIn(){
+    void checkIn(){//may or may not be done
         string bag;
         string reponse;
         cout << "Enter Bag ID: " << endl;
@@ -292,8 +291,11 @@ class Bags{
 
     void updateStatus(string bag ID, string newLocation){ //not done
     }
+
     void notifyPassenger(string message){} //not done
 }
+
+Bags globalbags;
 
 class AirportEmployeeUI{
     private:
@@ -377,11 +379,6 @@ class PassengerUI{
     //show menu
     //select thing 
 }
-
-
-
-
-Bags globalbags;
 
 int main(){
     srand(time(nullptr));
