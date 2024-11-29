@@ -44,6 +44,7 @@ class LinkedList{
         else{return false;}
 
     }
+
     bool checkInList(string value){//done
         Node* curr = head;
         Node* val = Node(value);
@@ -211,6 +212,8 @@ class Bags{
     LinkedList baggageCarousel;
     LinkedList unclaimedBaggage;
     LinkedList priorityBagList;
+    LinkedList carryOns; //holds all the bags that've been registered as carryons
+    LinkedList checkedInBags; //holds all the bags that've been checked in 
 
     //priorityqueue
     //regularqueue
@@ -221,10 +224,42 @@ class Bags{
     public:
     //status update
     //Check-in simulation
-    //TSA Carry on Security Simulation
-    //Checked Bags Security Simulation
     //check for connecting flight
 
+
+    void checkIn(){
+        string bag;
+        string reponse;
+        cout << "Enter Bag ID: " << endl;
+        cin >> bag;
+        cout << "Is this bag a carry-on? Please enter Y or N: " << endl;
+        while (true){
+            if (reponse == "Y" || response == "y"){
+                carryOns.addToListEnd(bag);
+                return;
+            }
+            if (response == "N" || reponse == "n"){
+                checkedInBags.addToListEnd(bag);
+                break;
+            }
+            else{
+                cout << "Invalid response. Please enter Y or N: " << endl;
+                continue;
+            }
+        }
+
+        cout << "Is the bag a priority bag? Please enter Y or N: " << endl;
+        while (true){
+            cin >> reponse;
+            if (reponse == "Y" || response == "y"){priorityBagList.addToListEnd(bag);}
+            else if (reponse == "N" || response == "N"){break;}
+            else{
+                cout << "Invalid response. Please enter Y or N: " << endl;
+                continue;
+            }
+        }
+
+    }
 
     void priorityStatus(string bagID){ //done
         if (priorityBagList.checkInList(bagID)){
@@ -303,18 +338,17 @@ class Bags{
         else{return true;}
     }
 
-    void addBagToOverheadBin(string bagID){ //if overhead bin space is full needs finished
+    void addBagToOverheadBin(string bagID){ //done, but double check
         if (overheadBinSpace()){
             for (int i = 0; i < 118; i++){
-                if (overheadBinArray[i] == null){
-                    overheadBinArray[i] = bagID;
-                }
-                else{continue;}
+                if (overheadBinArray[i] == null){overheadBinArray[i] = bagID;}
             }
         }
         else if (!overheadBinSpace()){
             cout << "There's no space. A flight attendent is coming to get your bag so it can be checked." endl;
-            //add bagID to checked bag stack
+            carryOns.removeBagFromList(bagID);
+            checkedInBags.addToListEnd(bagID);
+            addToRegularQueue(bagID);
         }
     }
 
