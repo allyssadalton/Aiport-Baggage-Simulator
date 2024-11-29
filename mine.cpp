@@ -1,5 +1,7 @@
 #include <iostream>
 #include <string> 
+#include <cstdlib>
+#include <ctime>
 
 using namespace std;
 
@@ -34,6 +36,12 @@ class LinkedList{
             curr = temp;
             
         }
+
+    }
+
+    bool isEmpty(){
+        if (head == nullptr){return true;}
+        else{return false;}
 
     }
     bool checkInList(string value){//done
@@ -199,6 +207,11 @@ class PassengerUI{
 class Bags{
     private: 
     string overheadBinArray[118]; //array to keep track of bags in overhead bins
+    //might might array ^ a linked list array
+    LinkedList baggageCarousel;
+    LinkedList unclaimedBaggage;
+    LinkedList priorityBagList;
+
     //priorityqueue
     //regularqueue
     //onplanestack
@@ -210,37 +223,86 @@ class Bags{
     //Check-in simulation
     //TSA Carry on Security Simulation
     //Checked Bags Security Simulation
-    //Baggage Carousel Linked List
-    //Baggage Carousel 
     //check for connecting flight
 
 
-    bool priorityStatus(string bagID){//finish how it will be classified as priority
-        if (priority){
+    void priorityStatus(string bagID){ //done
+        if (priorityBagList.checkInList(bagID)){
             addToPriorityQueue(bagID)
         }
-        if (!priority){
+        if (!priorityBagList.checkInList(bagID)){
             addToRegularQueue(bagID)
         }
     }
+
     void addToPriorityQueue(string bagID){ //not done
         updateStatus("Priority Queue")
     }
+
     void addToRegularQueue(string bagID){ //not done
         updateStatus("Regular Checked Bag Queue")
     }
+
     void addToCheckedBagsLoadedOnPlaneStack(string bagID){ //not done
         updateStatus("On Plane")
     }
-
-    void CarryOnBagSecurityCheck(string bagID){}
-
-    void CheckedBagSecurityCheck(string bagID){}
     
-    bool overheadBinSpace(){
+    //Claude helped me with this function so it could be a bit more extensive?
+    void CarryOnBagSecurityCheck(string bagID){ //technically done, but could be cooler
+        bool prohibitedItem = false;
+
+        //x-ray
+        cout << "Scanning bag (Bag ID: " << bagID << ") through X-Ray Machine." << endl;
+
+        //simulates prohibited item based on random number value
+        int randomCheck = rand() % 10;
+        if (randomCheck < 2) {prohibitedItem = true;}
+
+        if (prohibitedItem){
+            cout << "ALERT: Prohibited Item Detected In Bag (Bag ID: " << bagID << ")!!" << endl;
+            cout << "A TSA Agent Must Manually Inspect The Bag." << endl;
+        }
+
+        else{cout << "Bag (Bag ID: " << bagID << ") passed the security screening." << endl;}
+    }
+
+    //Claude helped me with this function so it could be a bit more extensive?
+    void CheckedBagSecurityCheck(string bagID){//technically done, but could be cooler
+        bool explosive = false;
+        bool prohibitedItem = false;
+        bool overWeight = false;
+
+        cout << "Preforming Security Screening on Bag (Bag ID: " << bagID << ")..." << endl;
+        int randomCheck = rand() % 10;
+        if (randomCheck =< 1) {explosive = true;}
+        if (randomCheck >= 8) {prohibitedItem = true;}
+        if (randomCheck % 10 < 3) {overWeight = true;}
+
+        if (explosive) {
+            cout << "CRITICAL SECURITY ALERT: Potential Explosives detected in Checked Bag (ID: " << bagID << ")!!" << endl;
+            cout << "Immediate intervention required. Bag isolated for further investigation." << endl;
+        }
+
+        if (prohibitedItem){
+            cout << "SECURITY WARNING: Potentially Dangerous Items detected in Checked Bag (ID: " << bagID << ")." << endl;
+            cout << "Bag requires detailed manual inspection by security personnel." << endl;
+        }
+    
+        if (overWeight) {
+            cout << "NOTE: Checked Bag (ID: " << bagID << ") exceeds weight limits." << endl;
+            cout << "Additional fees or handling may be required." << endl;
+        }
+
+        else{
+            cout << "Checked Bag (ID: " << bagID << ") successfully passed comprehensive security screening." << endl;
+        }
+    }
+    
+    bool overheadBinSpace(){ //done
         if (overheadBinArray[117] != null){return false;}
         else{return true;}
     }
+
     void addBagToOverheadBin(string bagID){ //if overhead bin space is full needs finished
         if (overheadBinSpace()){
             for (int i = 0; i < 118; i++){
@@ -256,14 +318,38 @@ class Bags{
         }
     }
 
-    void updateStatus(string newLocation){
+    void addBagToCarousel(string bagID){baggageCarousel.addToListEnd(bagID);}//done
+
+    void removeBagFromCarousel(string bagID){baggageCarousel.removeBagFromList(bagID);}//done
+
+    void addBagToUnclaimedList(string bagID){unclaimedBaggage.addToListEnd(bagID);}//done
+
+    void removeBagFromUnclaimedList(string bagID){unclaimedBaggage.removeBagFromList(bagID);}//done
+
+    void checkForBagsLeftOnCarousel(){ //not done
+        if (baggageCarousel.isEmpty()){
+            return;
+        }
+        else{
+
+        }
     }
+
+    void moveFromCarouselToUnclaimed(string bagID){ //done
+        removeBagFromCarousel(string bagID)
+        addBagToUnclaimedList(string bagID)
+    }
+
+    void updateStatus(string bag ID, string newLocation){ //not done
+    }
+    void notifyPassenger(string message){} //not done
 }
 
 
 
 
 int main(){
+    srand(time(nullptr));
     AirportEmployeeUI employeeUI;
     employeeUI.addUser("ADMIN", "Pass123") //creates admin account
 
