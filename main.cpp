@@ -7,6 +7,7 @@
 #include <chrono>
 #include <fstream>
 
+
 using namespace std;
 
 class Node{
@@ -223,7 +224,7 @@ class Queues{
 
 class Bags{
     private: 
-    string overheadBinArray[118]; //array to keep track of bags in overhead bins
+    string overheadBinArray[118] = {}; //array to keep track of bags in overhead bins
     LinkedList baggageCarousel; //holds all luggage on baggage carousel
     LinkedList unclaimedBaggage; //holds all unclaimed baggage
     LinkedList priorityBagList; //holds all the bags that've been checked in as a priority bag
@@ -236,7 +237,10 @@ class Bags{
     
     public:
 
-    #include <fstream>
+    
+    void createArray(){
+        for (int i = 0; i < 118; i++){overheadBinArray[i] = " ";}
+    }
 
     void logEvent(string event){ //ChatGPT wrote this for me
         ofstream logFile("simulation_log.txt", ios::app); // Open in append mode
@@ -247,6 +251,9 @@ class Bags{
         else{cerr << "Error: Unable to open log file." << endl;}
     }
 
+    void addToCheckedInBags(string bagID){
+        checkedInBags.addToListEnd(bagID);
+    }
 
     void randomBagEvents(string bagID){
         int event = rand() % 100;
@@ -300,6 +307,10 @@ class Bags{
         }
     }
 
+    void addToCarryOns(string bagID){
+        carryOns.addToListEnd(bagID);
+    }
+
     void checkIn(){//may or may not be done
         string bag;
         string response;
@@ -309,7 +320,7 @@ class Bags{
         while (true){
             cin >> response;
             if (response == "Y" || response == "y"){
-                carryOns.addToListEnd(bag);
+                addToCarryOns(bag);
                 updateStatus(bag, "Carry On");
                 CarryOnBagSecurityCheck(bag);
                 updateStatus(bag, "Carry On with Passenger");
@@ -351,14 +362,6 @@ class Bags{
 
     }
 
-    void priorityStatus(string bagID){ //done
-        if (priorityBagList.checkInList(bagID)){
-            addToPriorityQueue(bagID);
-        }
-        if (!priorityBagList.checkInList(bagID)){
-            addToRegularQueue(bagID);
-        }
-    }
 
     void addToPriorityQueue(string bagID){ //done
         priorityQueue.enqueue(bagID);
@@ -438,7 +441,7 @@ class Bags{
     }
     
     bool overheadBinSpace(){ //done
-        if (overheadBinArray[117] != ""){return false;}
+        if (overheadBinArray[117] != " "){return false;}
         else{return true;}
     }
 
@@ -527,8 +530,8 @@ class Bags{
     }
 
     void notifyPassenger(string bagID, string message){
-        cout << "Passenger Notification: Bag " << bagID << " is now in the" << message << "." << endl;
-    } //not done
+        cout << "Passenger Notification: Bag " << bagID << " is now in the " << message << "." << endl;
+    } 
 };
 
 Bags globalBags;
@@ -758,7 +761,6 @@ class AirportEmployeeUI{
 
     void menuOption9(){
         globalBags.moveFromRegularToPlane();
-        cout << "Bags Moved" << endl;
     } // done
 
     void menuOption11(){globalBags.moveFromPlaneToCarousel();}
@@ -893,27 +895,155 @@ class PassengerUI {
     }
 };
 
+class Simulation {
+    private:
+    static const int MAX_BAGS = 150; 
+    string carryOnBags[MAX_BAGS];
+    int carryOnCount = 0;
+    int priorityCount = 0;
+    int regularCount = 0;
+    AirportEmployeeUI ui;
+
+    public:
+    void inputCarryOnBags() {
+        int numBags;
+        cout << "How many Carry-On Bags will be processed?" << endl;
+        while (true){
+            cout << "Must be less than 150" << endl;
+            cin >> numBags;
+            if(numBags > 150){continue;}
+            else{break;}
+        }
+        carryOnCount = numBags;
+        for (int i = 0; i < numBags; i++) {
+            string bag;
+            cout << "Enter Carry-On Bag ID " << i + 1 << ": ";
+            cin >> bag;
+            carryOnBags[i] = bag;
+            globalBags.addToCarryOns(bag);
+            globalBags.updateStatus(bag, "Carry On");
+        }
+        
+    }
+
+    void inputPriorityBags() {
+        int numBags;
+        cout << "How many Priority Bags will be processed?" << endl;
+        while (true){
+            cout << "Must be less than 150" << endl;
+            cin >> numBags;
+            if(numBags > 150){continue;}
+            else{break;}
+        }
+        priorityCount = numBags;
+        for (int i = 0; i < numBags; i++) {
+            string bag;
+            cout << "Enter Priority Bag ID " << i + 1 << ": ";
+            cin >> bag;
+            globalBags.addToPriorityQueue(bag);
+            globalBags.addToCheckedInBags(bag);
+        }
+    }
+
+    void inputRegularBags() {
+        int numBags;
+        cout << "How many Regular Bags will be processed?" << endl;
+        while (true){
+            cout << "Must be less than 150" << endl;
+            cin >> numBags;
+            if(numBags > 150){continue;}
+            else{break;}
+        }
+        regularCount = numBags;
+        
+        for (int i = 0; i < numBags; i++) {
+            string bag;
+            cout << "Enter Regular Bag ID " << i + 1 << ": ";
+            cin >> bag;
+            globalBags.addToRegularQueue(bag);
+            globalBags.addToCheckedInBags(bag);
+            globalBags.updateStatus(bag, "Checked In");
+        }
+    }
+
+    void processCarryOnBags(){
+        cout << "--- Processing Carry-On Bags ---" << endl;
+        for (int i = 0; i < carryOnCount; i++) {
+            globalBags.CarryOnBagSecurityCheck(carryOnBags[i]);
+            globalBags.addBagToOverheadBin(carryOnBags[i]);
+            globalBags.updateStatus(carryOnBags[i], "Carry On with Passenger");
+            // Simulate small delay
+            this_thread::sleep_for(chrono::milliseconds(500));
+        }
+    }
+
+    void processPriorityBags() {
+        cout << "--- Processing Priority Bags ---" << endl;
+            ui.menuOption8();
+            // Simulate small delay
+            this_thread::sleep_for(chrono::milliseconds(500));
+    }
+
+    void processRegularBags() {
+        cout << "--- Processing Regular Bags ---" << endl;
+        ui.menuOption9();
+        this_thread::sleep_for(chrono::milliseconds(500));
+    }
+
+    void moveToCarousel() {
+        cout << "--- Moving Bags to Carousel ---" << endl;
+        globalBags.moveFromPlaneToCarousel();
+    }
+
+    void runSimulation(){
+        // Reset counts
+        carryOnCount = 0;
+        priorityCount = 0;
+        regularCount = 0;
+
+        // Input all bag types
+        inputCarryOnBags();
+        inputPriorityBags();
+        inputRegularBags();
+
+        // Process bags
+        processCarryOnBags();
+        processRegularBags();
+        processPriorityBags();
+
+        // Move to carousel
+        moveToCarousel();
+
+
+        // Log simulation completion
+        cout << "--- Simulation Complete ---" << endl;
+        globalBags.logEvent("Full Baggage Handling Simulation Completed");
+    }
+};
+
 
 int main(){
     srand(time(nullptr));
     AirportEmployeeUI employeeUI;
     PassengerUI passengerUI;
+    Simulation sim;
+    
+    globalBags.createArray();
 
     employeeUI.addUser("ADMIN", "Pass123"); //creates admin account
 
-    
 
     while (true){
         cout << "1. Employee Login" << endl;
         cout << "2. Passenger Login" << endl;
-        cout << "3. Exit" << endl;
+        cout << "3. Run Baggage Simulation" << endl;
+        cout << "4. Exit" << endl;
         string response;
         cin >> response;
         if (response == "1"){employeeUI.run();}
-        else if(response == "2"){
-            passengerUI.run();
-        }
-        else if(response == "3"){break;}
+        else if(response == "2"){passengerUI.run();}
+        else if(response == "3"){sim.runSimulation();}
+        else if(response == "4"){break;}
         else{cout << "Invalid Reponse." << endl;}
     }
     return 0;
