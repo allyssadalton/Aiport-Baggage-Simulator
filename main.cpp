@@ -5,6 +5,7 @@
 #include <map>
 #include <thread> 
 #include <chrono>
+#include <fstream>
 
 using namespace std;
 
@@ -235,6 +236,16 @@ class Bags{
     
     public:
 
+    #include <fstream>
+
+    void logEvent(string event){ //ChatGPT wrote this for me
+        ofstream logFile("simulation_log.txt", ios::app); // Open in append mode
+        if (logFile.is_open()){
+            logFile << event << endl;
+            logFile.close();
+        } 
+        else{cerr << "Error: Unable to open log file." << endl;}
+    }
 
 
     void randomBagEvents(string bagID){
@@ -486,6 +497,12 @@ class Bags{
         bagStatusMap[bagID] = newLocation;
         if (newLocation == "On Plane"){notifyPassenger(bagID, "Plane");}
         else{notifyPassenger(bagID, newLocation);}
+        ofstream logFile("simulation_log.txt", ios::app);
+        if (logFile.is_open()){
+            logFile << "Bag ID " << bagID << " status updated to: " << newLocation << endl;
+            logFile.close();
+        } 
+        else{cerr << "Error: Unable to open log file." << endl;}
     }
 
     void viewUnclaimedList(){unclaimedBaggage.viewList();} //done
