@@ -283,6 +283,8 @@ class Bags{
             if (response == "Y" || response == "y"){
                 carryOns.addToListEnd(bag);
                 updateStatus(bag, "Carry On");
+                CarryOnBagSecurityCheck(bag);
+                updateStatus(bag, "Carry On with Passenger");
                 return;
             }
             if (response == "N" || response == "n"){
