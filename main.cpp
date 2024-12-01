@@ -3,6 +3,8 @@
 #include <cstdlib>
 #include <ctime>
 #include <map>
+#include <thread> 
+#include <chrono>
 
 using namespace std;
 
@@ -233,6 +235,20 @@ class Bags{
     
     public:
 
+
+
+    void randomBagEvents(string bagID){
+        int event = rand() % 100;
+        if (event < 5){ cout << "Oh no! Bag ID: " << bagID << " has been damaged!" << endl;} 
+        else if (event < 10){
+            cout << "Alert! Bag ID: " << bagID << " has been misplaced and added to unclaimed baggage." << endl;
+            addBagToUnclaimedList(bagID);
+        } 
+        else{
+            cout << "All bags are accounted for." << endl;
+        }
+    }
+
     bool emptyCarryOnBags(){
         if(carryOns.isEmpty()){return true;}
         else{return false;}
@@ -267,6 +283,7 @@ class Bags{
 
     void moveFromPlaneToCarousel(){
         while (!onPlaneStack.isEmpty()){
+            randomBagEvents(onPlaneStack.peek());
             updateStatus(onPlaneStack.peek(), "On Baggage Carousel");
             baggageCarousel.addToListEnd(onPlaneStack.pop());
         }
@@ -467,6 +484,8 @@ class Bags{
 
     void updateStatus(string bagID, string newLocation){ //done
         bagStatusMap[bagID] = newLocation;
+        if (newLocation == "On Plane"){notifyPassenger(bagID, "Plane");}
+        else{notifyPassenger(bagID, newLocation);}
     }
 
     void viewUnclaimedList(){unclaimedBaggage.viewList();} //done
@@ -490,7 +509,9 @@ class Bags{
         else {cout << "No status found for Bag ID: " << bagID << endl;}
     }
 
-    void notifyPassenger(string message){} //not done
+    void notifyPassenger(string bagID, string message){
+        cout << "Passenger Notification: Bag " << bagID << " is now in the" << message << "." << endl;
+    } //not done
 };
 
 Bags globalBags;
