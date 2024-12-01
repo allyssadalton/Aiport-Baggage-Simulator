@@ -44,6 +44,10 @@ class LinkedList{
 
     }
 
+    string returnHead(){
+        return head -> val;
+    }
+
     bool isEmpty(){ //done
         if (head == nullptr){return true;}
         else{return false;}
@@ -73,29 +77,49 @@ class LinkedList{
     }
 
 
-    void removeBagFromList(string bagID){ //done
-        Node* bag = new Node(bagID);
-        if (head == nullptr){
-            cout << "Bag not in database. " << endl;
+    void removeBagFromList(string bagID) {
+        if (head == nullptr) {
+            cout << "The list is empty. No bag to remove." << endl;
             return;
         }
-        else{
+
+        // If the head node matches the bagID
+        if (head->val == bagID) {
             Node* temp = head;
-            if (checkInList(bagID)){
-                while (temp != bag && temp -> next != nullptr){
-                    temp = temp -> next;
-                    if (temp == bag){
-                        delete temp;
-                        temp = nullptr;
-                    }
-                }
+            head = head->next;
+            if (head == nullptr) {
+                // List becomes empty, so update tail
+                tail = nullptr;
             }
-            else{
-                cout << "Bag not in database. " << endl;
-                return;
-            }
+            delete temp;
+            
+            return;
         }
+
+    // Traverse the list to find the matching node
+    Node* current = head;
+    while (current->next != nullptr && current->next->val != bagID) {
+        current = current->next;
     }
+
+    // If no matching node was found
+    if (current->next == nullptr) {
+        cout << "Bag ID: " << bagID << " not found in the list." << endl;
+        return;
+    }
+
+    // Remove the matching node
+    Node* temp = current->next;
+    current->next = temp->next;
+    if (current->next == nullptr) {
+        // Update tail if the last node was removed
+        tail = current;
+    }
+    delete temp;
+
+    cout << "Bag ID: " << bagID << " removed from the list." << endl;
+}
+
 
     void removeUserFromList(string username){ //done
         Node* user = new Node(username);
@@ -122,6 +146,38 @@ class LinkedList{
             }
         }
     }
+
+    void moveHeadToEnd() {
+        if (head == nullptr || head->next == nullptr) {
+            // The list is empty or has only one node
+            cout << "No need to move the head. The list is either empty or has only one node." << endl;
+            return;
+        }
+
+        Node* oldHead = head;      // Save the current head
+        head = head->next;         // Move head to the next node
+        oldHead->next = nullptr;   // Detach the old head
+
+        tail->next = oldHead;      // Link the old head to the tail
+        tail = oldHead;            // Update the tail pointer
+
+        cout << "Head node moved to the end of the list." << endl;
+    }
+
+
+    int size() {
+        int count = 0;
+        Node* current = head;
+
+        // Traverse the list and count the nodes
+        while (current != nullptr) {
+            count++;
+            current = current->next;
+        }
+
+        return count;
+    }
+
 
     void viewList(){
         if (head == nullptr){cout << "List Empty." << endl;}
@@ -237,7 +293,15 @@ class Bags{
     
     public:
 
+    void moveBagToEndOfCarousel(string bagID){
+        removeBagFromCarousel(bagID);
+        baggageCarousel.addToListEnd(bagID);
+    }
     
+    bool isCarouselEmpty(){
+        if (baggageCarousel.isEmpty()){return true;}
+        else{return false;}
+    }
     void createArray(){
         for (int i = 0; i < 118; i++){overheadBinArray[i] = " ";}
     }
@@ -362,6 +426,9 @@ class Bags{
 
     }
 
+    string peekCarousel(){
+        return baggageCarousel.returnHead();
+    }
 
     void addToPriorityQueue(string bagID){ //done
         priorityQueue.enqueue(bagID);
@@ -469,7 +536,7 @@ class Bags{
 
     void removeBagFromCarousel(string bagID){ //done
         baggageCarousel.removeBagFromList(bagID);
-        updateStatus(bagID, "Picked Up by Passenger");
+        //updateStatus(bagID, "Picked Up by Passenger");
     }
 
     void addBagToUnclaimedList(string bagID){ //done
@@ -491,6 +558,10 @@ class Bags{
         }
     }
 
+    void moveHeadToEndCarousel(){
+        baggageCarousel.moveHeadToEnd();
+    }
+
     void moveFromCarouselToUnclaimed(string bagID){ //done
         removeBagFromCarousel(bagID);
         addBagToUnclaimedList(bagID);
@@ -506,6 +577,10 @@ class Bags{
             logFile.close();
         } 
         else{cerr << "Error: Unable to open log file." << endl;}
+    }
+
+    int getCarouselSize(){
+        return baggageCarousel.size();
     }
 
     void viewUnclaimedList(){unclaimedBaggage.viewList();} //done
@@ -527,6 +602,10 @@ class Bags{
             cout << "Bag ID: " << bagID << " - Current Status: " << bagStatusMap[bagID] << endl;
         } 
         else {cout << "No status found for Bag ID: " << bagID << endl;}
+    }
+
+    void moveBagToEndOfCarousel(){
+        baggageCarousel.moveHeadToEnd();
     }
 
     void notifyPassenger(string bagID, string message){
@@ -995,6 +1074,45 @@ class Simulation {
         globalBags.moveFromPlaneToCarousel();
     }
 
+    void randomlyPickUpBags() {
+        cout << "--- Picking Up Bags from Carousel ---" << endl;
+
+        // If the carousel is empty, exit the function
+        if (globalBags.isCarouselEmpty()) {
+            cout << "No bags on the carousel to pick up." << endl;
+            return;
+        }
+
+        int initialSize = globalBags.getCarouselSize(); // Get the current size of the carousel
+
+        // Process up to the initial size of the carousel
+        for (int i = 0; i < initialSize; i++) {
+            string bagID = globalBags.peekCarousel(); // Get the first bag on the carousel
+            int randomChance = rand() % 100;         // Generate a random number between 0 and 99
+
+            if (randomChance < 95) { // 95% chance the bag is picked up
+                cout << "Bag ID: " << bagID << " picked up by passenger." << endl;
+                globalBags.removeBagFromCarousel(bagID); // Remove the bag from the carousel
+            } 
+            else {
+                cout << "Bag ID: " << bagID << " remains on the carousel." << endl;
+                cout << "Bag ID: " << bagID << " moved to unclaimed baggage." << endl;
+                globalBags.moveFromCarouselToUnclaimed(bagID);
+            }
+        }
+    }
+
+    void checkAndMoveToUnclaimedBags() {
+        cout << "--- Checking for Unclaimed Bags on Carousel ---" << endl;
+        string bagID;
+        while (!globalBags.emptyCheckedInBags()) {
+            // Check the status of each bag on the carousel
+            bagID = globalBags.peekCarousel();
+            cout << "Bag ID: " << bagID << " still on the carousel. Moving to unclaimed baggage." << endl;
+            globalBags.moveFromCarouselToUnclaimed(bagID);
+        }
+    }
+
     void runSimulation(){
         // Reset counts
         carryOnCount = 0;
@@ -1013,8 +1131,11 @@ class Simulation {
 
         // Move to carousel
         moveToCarousel();
+        cout << "Carousel size before pickup: " << globalBags.getCarouselSize() << endl;
+        randomlyPickUpBags();
+        cout << "Carousel size after pickup: " << globalBags.getCarouselSize() << endl;
 
-
+        //checkAndMoveToUnclaimedBags();
         // Log simulation completion
         cout << "--- Simulation Complete ---" << endl;
         globalBags.logEvent("Full Baggage Handling Simulation Completed");
