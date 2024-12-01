@@ -702,11 +702,11 @@ class AirportEmployeeUI{
 
 class PassengerUI {
     public:
-    bool login() {
-        string bagID;
-        cout << "-----Passenger Login-----" << endl;
-        cout << "Enter your Bag ID to login: ";
-        cin >> bagID;
+    bool login(string bagID) {
+        //string bagID;
+        //cout << "-----Passenger Login-----" << endl;
+        //cout << "Enter your Bag ID to login: ";
+        //cin >> bagID;
 
         cout << "Debug: Checking if `checkedInBags` is empty..." << endl;
         if (globalBags.emptyCheckedInBags()){
@@ -808,11 +808,13 @@ class PassengerUI {
     void run() {
         while (true) {
             cout << "Debug: Entering Passenger Login loop..." << endl;
-            if (login()) {
-                string bagID;
-                cout << "Enter Bag ID Number: ";
-                cin >> bagID;
+            cout << "-----Passenger Login-----" << endl;
+            string bagID;
+            cout << "Enter Bag ID Number: ";
+            cin >> bagID;
 
+            if (login(bagID)) {
+                
                 cout << "Debug: Attempting to open Passenger Menu..." << endl;
                 menuResponse(bagID);
                 break; // Exit the loop after the menu interaction
