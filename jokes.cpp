@@ -1,605 +1,1146 @@
 #include <iostream>
-#include <string>
-#include <vector>
-#include <queue>
-#include <map>
-#include <random>
-#include <chrono>
-#include <algorithm>
-#include <functional>
-#include <limits>
-#include <iomanip>
-#include <cctype>
+#include <string> 
 #include <cstdlib>
+#include <ctime>
+#include <map>
+#include <thread> 
+#include <chrono>
+#include <fstream>
+
 
 using namespace std;
 
-// Forward declarations
-class Bag;
-class Flight;
-class Passenger;
-class Timer;
-class BaggageSystem;
+class Node{
+    public:
+    string val;
+    Node* next;
 
-// Timer class to manage simulated time
-class Timer {
-private:
-    int currentTime; // Time in minutes
-
-public:
-    Timer() : currentTime(0) {}
-
-    void advanceTime(int minutes) {currentTime += minutes;}
-
-    int getCurrentTime() const {return currentTime;}
-
-    string getFormattedTime() const {
-        int hours = currentTime / 60;
-        int minutes = currentTime % 60;
-        return to_string(hours) + ":" + (minutes < 10 ? "0" : "") + to_string(minutes);
+    Node(string value){
+        val = value;
+        next = nullptr;
     }
 };
 
-// Enhanced Bag class combining both implementations
-class Bag {
-private:
-    string bagID;
-    string status;
-    string location;
-    string passengerID;
-    string flightID;
-    bool priority;
-    bool lost;
+class LinkedList{
+    private:
+    Node* head;
+    Node* tail;
 
-public:
-    Bag(const string& id, const string& pID, const string& fID, bool isPriority)
-        : bagID(id)
-        , status("Checked")
-        , location("Counter")
-        , passengerID(pID)
-        , flightID(fID)
-        , priority(isPriority)
-        , lost(false) {}
-
-    void updateStatus(const string& newStatus) {status = newStatus;}
-
-    void updateLocation(const string& newLocation) {location = newLocation;}
-
-    void markAsLost() {
-        lost = true;
-        status = "Lost";
+    public:
+    LinkedList(){ //done
+        head = nullptr;
+        tail = nullptr;
     }
 
-    // Getters
-    string getBagID() const {return bagID;}
-    string getStatus() const {return status;}
-    string getLocation() const {return location;}
-    string getPassengerID() const {return passengerID;}
-    string getFlightID() const {return flightID;}
-    bool isPriority() const {return priority;}
-    bool isLost() const {return lost;}
-};
+    ~LinkedList(){ //done
+        Node* curr = head;
+        while (curr != nullptr){
+            Node* temp = curr -> next;
+            delete curr;
+            curr = nullptr;
+            curr = temp;
+            
+        }
 
-// Flight class
-class Flight {
-private:
-    string flightID;
-    string departurePlace;
-    string arrivalPlace;
-    string departureTime;
-    string arrivalTime;
-    string status;
-    vector<Bag*> checkedBags;
-
-public:
-    Flight(const string& id, const string& dep, const string& arr,
-           const string& depTime, const string& arrTime)
-        : flightID(id)
-        , departurePlace(dep)
-        , arrivalPlace(arr)
-        , departureTime(depTime)
-        , arrivalTime(arrTime)
-        , status("Scheduled") {}
-
-    void addBag(Bag* bag) {checkedBags.push_back(bag);}
-
-    void removeBag(const string& bagID) {
-        checkedBags.erase(
-            remove_if(checkedBags.begin(), checkedBags.end(),[&bagID](const Bag* bag) {return bag->getBagID() == bagID;}),
-            checkedBags.end()
-        );
     }
 
-    void updateStatus(const std::string& newStatus) {status = newStatus;}
-
-    // Getters
-    string getFlightID() const {return flightID;}
-    string getStatus() const {return status;}
-    const vector<Bag*>& getCheckedBags() const {return checkedBags;}
-};
-
-// Passenger class
-class Passenger {
-private:
-    string passengerID;
-    std::string name;
-    std::vector<Bag*> bags;
-
-public:
-    Passenger(const std::string& id, const std::string& n)
-        : passengerID(id), name(n) {}
-
-    void addBag(Bag* bag) {
-        bags.push_back(bag);
+    string returnHead(){
+        return head -> val;
     }
 
-    // Getters
-    std::string getPassengerID() const { return passengerID; }
-    std::string getName() const { return name; }
-    const std::vector<Bag*>& getBags() const { return bags; }
+    bool isEmpty(){ //done
+        if (head == nullptr){return true;}
+        else{return false;}
+
+    }
+
+    bool checkInList(string value) {
+        Node* curr = head;
+        while (curr != nullptr){
+            if (curr -> val == value) {return true;}
+            curr = curr -> next;
+        }
+        return false;
+    }
+
+
+    void addToListEnd(string value) { 
+        Node* val = new Node(value);
+        if (head == nullptr){
+            head = val;
+            tail = val;
+        } 
+        else{
+            tail -> next = val;
+            tail = val;
+        }
+    }
+
+
+    void removeBagFromList(string bagID){ //done
+        Node* bag = new Node(bagID);
+        if (head == nullptr){
+            cout << "Bag not in database. " << endl;
+            return;
+        }
+        else{
+            Node* temp = head;
+            if (checkInList(bagID)){
+                while (temp != bag && temp -> next != nullptr){
+                    temp = temp -> next;
+                    if (temp == bag){
+                        delete temp;
+                        temp = nullptr;
+                    }
+                }
+            }
+            else{
+                cout << "Bag not in database. " << endl;
+                return;
+            }
+        }
+    }
+
+    void removeUserFromList(string username){ //done
+        Node* user = new Node(username);
+        if (head == nullptr){
+            cout << "User not in database. " << endl;
+            return;
+        }
+        else{
+            Node* temp = head;
+            if (checkInList(username)){
+                while (temp != user && temp -> next != nullptr){
+                    temp = temp -> next;
+                    if (temp == user){
+                        delete temp -> next;
+                        temp -> next = nullptr;
+                        delete temp;
+                        temp = nullptr;
+                    }
+                }
+            }
+            else{
+                cout << "User not in database. " << endl;
+                return;
+            }
+        }
+    }
+
+    void moveHeadToEnd() {
+        if (head == nullptr || head->next == nullptr) {
+            // The list is empty or has only one node
+            cout << "No need to move the head. The list is either empty or has only one node." << endl;
+            return;
+        }
+
+        Node* oldHead = head;      // Save the current head
+        head = head->next;         // Move head to the next node
+        oldHead->next = nullptr;   // Detach the old head
+
+        tail->next = oldHead;      // Link the old head to the tail
+        tail = oldHead;            // Update the tail pointer
+
+        cout << "Head node moved to the end of the list." << endl;
+    }
+
+
+    int size() {
+        int count = 0;
+        Node* current = head;
+
+        // Traverse the list and count the nodes
+        while (current != nullptr) {
+            count++;
+            current = current->next;
+        }
+
+        return count;
+    }
+
+
+    void viewList(){
+        if (head == nullptr){cout << "List Empty." << endl;}
+        else{
+            Node* temp = head;
+            while (temp != nullptr) { // Iterate until temp is null
+                cout << temp -> val << endl; // Print the node's data
+                temp = temp -> next; // Move to the next node
+            }
+        }
+    }
 };
 
-// Enhanced BaggageSystem class
-class BaggageSystem {
-private:
-    std::map<std::string, Flight*> flights;
-    std::map<std::string, Passenger*> passengers;
-    std::priority_queue<
-        Bag*,
-        std::vector<Bag*>,
-        std::function<bool(Bag*, Bag*)>
-    > processingQueue;
-    std::vector<Bag*> loadedBags;
-    std::vector<Bag*> lostBags;
-    std::vector<Bag*> unclaimedBags;
-    Timer timer;
+class Stacks{
+    private:
+    Node* top;
     
-    std::random_device rd;
-    std::mt19937 gen;
-    std::uniform_real_distribution<> errorDist;
+    public: 
+    Stacks(){top = nullptr;}
 
-    static constexpr double ERROR_RATE = 0.05;
+    ~Stacks() {
+        while (!isEmpty()) {pop();}
+    }   
 
-public:
-    void displayPassengerBags(const std::string& passengerID) {
-        auto it = passengers.find(passengerID);
-        if (it != passengers.end()) {
-            const auto& bags = it->second->getBags();
-            std::cout << "\nBags for passenger " << it->second->getName() << ":\n";
-            if (bags.empty()) {
-                std::cout << "No bags checked in.\n";
-            } else {
-                for (const Bag* bag : bags) {
-                    std::cout << "\nBag ID: " << bag->getBagID() << std::endl
-                          << "Status: " << bag->getStatus() << std::endl
-                          << "Location: " << bag->getLocation() << std::endl
-                          << "Flight: " << bag->getFlightID() << std::endl
-                          << "Priority: " << (bag->isPriority() ? "Yes" : "No") << std::endl;
+    bool isEmpty(){return top == nullptr;}
+
+    void push(string value) {
+        Node* newNode = new Node(value);
+        newNode -> next = top;
+        top = newNode;
+    }
+
+    string pop() {
+        if (isEmpty()) {return "Empty";}
+        string poppedValue = top -> val;
+        Node* temp = top;
+        top = top -> next;
+        delete temp;
+        return poppedValue;
+    }
+
+    string peek() {
+        if (isEmpty()) {return "Empty";}
+        return top -> val;
+    }   
+};
+
+class Queues{
+    private:
+    Node* head;
+    Node* tail;
+    int size;
+    
+    public: 
+    Queues(){
+        head = nullptr; 
+        tail = nullptr;  
+        int size = 0;     
+    }
+
+    ~Queues() {
+        while(!isEmpty()){dequeue();}
+    }
+
+    void enqueue(string bagID) {
+        Node* newNode = new Node(bagID);
+        if (isEmpty()){
+            head = newNode;
+            tail = newNode;
+        } 
+        else{
+            tail -> next = newNode;   
+            tail = newNode;        
+        }
+        size++;
+    }
+
+    string dequeue() {
+        if (isEmpty()){return "Empty";}
+        string bagID = head -> val; 
+        Node* temp = head;       
+        head = head -> next;    
+        delete temp; 
+        temp = nullptr;            
+        size--;
+        if (isEmpty()){tail = nullptr;} 
+        return bagID; 
+    }
+
+    bool isEmpty() {return size == 0;}
+
+    string peek() {
+        if (isEmpty()) {return "";}
+        return head -> val; 
+    }
+
+    int getSize() {return size;}
+};
+
+
+class Bags{
+    private: 
+    string overheadBinArray[118] = {}; //array to keep track of bags in overhead bins
+    LinkedList baggageCarousel; //holds all luggage on baggage carousel
+    LinkedList unclaimedBaggage; //holds all unclaimed baggage
+    LinkedList priorityBagList; //holds all the bags that've been checked in as a priority bag
+    LinkedList carryOns; //holds all the bags that've been registered as carryons
+    LinkedList checkedInBags; //holds all the bags that've been checked in 
+    Stacks onPlaneStack; //holds all the bags that've been placed on under plane
+    Queues priorityQueue; //queue for checkedin bags that have priority
+    Queues regularQueue; //queue for checkedin bags that don't have priority
+    map<string, string> bagStatusMap; //map to link bagID and where the bag is
+    
+    public:
+
+    void moveBagToEndOfCarousel(string bagID){
+        removeBagFromCarousel(bagID);
+        baggageCarousel.addToListEnd(bagID);
+    }
+    
+    bool isCarouselEmpty(){
+        if (baggageCarousel.isEmpty()){return true;}
+        else{return false;}
+    }
+    void createArray(){
+        for (int i = 0; i < 118; i++){overheadBinArray[i] = " ";}
+    }
+
+    void logEvent(string event){ //ChatGPT wrote this for me
+        ofstream logFile("simulation_log.txt", ios::app); // Open in append mode
+        if (logFile.is_open()){
+            logFile << event << endl;
+            logFile.close();
+        } 
+        else{cerr << "Error: Unable to open log file." << endl;}
+    }
+
+    void addToCheckedInBags(string bagID){
+        checkedInBags.addToListEnd(bagID);
+    }
+
+    void randomBagEvents(string bagID){
+        int event = rand() % 100;
+        if (event < 5){ cout << "Oh no! Bag ID: " << bagID << " has been damaged!" << endl;} 
+        else if (event < 10){
+            cout << "Alert! Bag ID: " << bagID << " has been misplaced and added to unclaimed baggage." << endl;
+            addBagToUnclaimedList(bagID);
+        } 
+        else{
+            cout << "All bags are accounted for." << endl;
+        }
+    }
+
+    bool emptyCarryOnBags(){
+        if(carryOns.isEmpty()){return true;}
+        else{return false;}
+    }
+
+    bool emptyCheckedInBags(){
+        if(checkedInBags.isEmpty()){return true;}
+        else{return false;}
+    }
+
+    void moveFromPriorityToPlane(){
+        while (priorityQueue.getSize() != 0){
+            string bag = priorityQueue.peek();
+            cout << "Bag ID: " << bag <<  "Moved from Priority Queue to Security Check." << endl;
+            CheckedBagSecurityCheck(bag);
+            onPlaneStack.push(priorityQueue.dequeue());
+            cout << "Bag ID: " << bag <<  "Moved from Security Check to Plane." << endl;
+            updateStatus(bag, "On Plane");
+        }
+    }
+
+    void moveFromRegularToPlane(){
+        while (regularQueue.getSize() != 0){
+            string bag = priorityQueue.peek();
+            cout << "Bag ID: " << bag <<  "Moved from Checked Bag Queue to Security Check." << endl;
+            CheckedBagSecurityCheck(bag);
+            onPlaneStack.push(regularQueue.dequeue());
+            cout << "Bag ID: " << bag <<  "Moved from Security Check to Plane." << endl;
+            updateStatus(bag, "On Plane");
+        }
+    }
+
+    void moveFromPlaneToCarousel(){
+        while (!onPlaneStack.isEmpty()){
+            randomBagEvents(onPlaneStack.peek());
+            updateStatus(onPlaneStack.peek(), "On Baggage Carousel");
+            baggageCarousel.addToListEnd(onPlaneStack.pop());
+        }
+    }
+
+    void addToCarryOns(string bagID){
+        carryOns.addToListEnd(bagID);
+    }
+
+    void checkIn(){//may or may not be done
+        string bag;
+        string response;
+        cout << "Enter Bag ID: " << endl;
+        cin >> bag;
+        cout << "Is this bag a carry-on? Please enter Y or N: " << endl;
+        while (true){
+            cin >> response;
+            if (response == "Y" || response == "y"){
+                addToCarryOns(bag);
+                updateStatus(bag, "Carry On");
+                CarryOnBagSecurityCheck(bag);
+                updateStatus(bag, "Carry On with Passenger");
+                return;
+            }
+            if (response == "N" || response == "n"){
+                checkedInBags.addToListEnd(bag);
+                break;
+            }
+            else{
+                cout << "Invalid response. Please enter Y or N: " << endl;
+                continue;
+            }
+        }
+
+        cout << "Is the bag a priority bag? Please enter Y or N: " << endl;
+        while (true){
+            cin >> response;
+            if (response == "Y" || response == "y"){
+                priorityBagList.addToListEnd(bag);
+                checkedInBags.addToListEnd(bag);
+                updateStatus(bag, "Priority Checked In");
+                addToPriorityQueue(bag);
+                cout << "Bag Checked Into Priority Queue" << endl;
+                return;
+            }
+            else if (response == "N" || response == "N"){
+                updateStatus(bag, "Checked In");
+                checkedInBags.addToListEnd(bag);
+                addToRegularQueue(bag);
+                cout << "Bag Checked Into Queue" << endl;
+                return;
+            }
+            else{
+                cout << "Invalid response. Please enter Y or N: " << endl;
+                continue;
+            }
+        }
+
+    }
+
+    string peekCarousel(){
+        return baggageCarousel.returnHead();
+    }
+
+    void addToPriorityQueue(string bagID){ //done
+        priorityQueue.enqueue(bagID);
+        updateStatus(bagID, "Priority Queue");
+    }
+
+    void addToRegularQueue(string bagID){ //done
+        regularQueue.enqueue(bagID);
+        updateStatus(bagID, "Regular Checked Bag Queue");
+    }
+
+    void addToCheckedBagsLoadedOnPlaneStack(string bagID){ // done
+        onPlaneStack.push(bagID);
+        updateStatus(bagID, "On Plane");
+    }
+
+    bool checkInCheckedInBags(string bagID){
+        if (checkedInBags.checkInList(bagID)){return true;}
+        else{return false;}
+    }
+
+    bool checkInCarryOns(string bagID){
+        if (carryOns.checkInList(bagID)){return true;}
+        else{return false;}
+    }
+    
+    //Claude helped me with this function so it could be a bit more extensive?
+    void CarryOnBagSecurityCheck(string bagID){ //technically done, but could be cooler
+        bool prohibitedItem = false;
+        updateStatus(bagID, "Security Check");
+        //x-ray
+        cout << "Scanning bag (Bag ID: " << bagID << ") through X-Ray Machine." << endl;
+
+        //simulates prohibited item based on random number value
+        int randomCheck = rand() % 10;
+        if (randomCheck < 2) {prohibitedItem = true;}
+
+        if (prohibitedItem){
+            cout << "ALERT: Prohibited Item Detected In Bag (Bag ID: " << bagID << ")!!" << endl;
+            cout << "A TSA Agent Must Manually Inspect The Bag." << endl;
+        }
+
+        else{cout << "Bag (Bag ID: " << bagID << ") passed the security screening." << endl;}
+    }
+
+    //Claude helped me with this function so it could be a bit more extensive?
+    void CheckedBagSecurityCheck(string bagID){//technically done, but could be cooler
+        updateStatus(bagID, "Security Check");
+        bool explosive = false;
+        bool prohibitedItem = false;
+        bool overWeight = false;
+
+        cout << "Preforming Security Screening on Bag (Bag ID: " << bagID << ")..." << endl;
+        int randomCheck = rand() % 10;
+        if (randomCheck <= 1) {explosive = true;}
+        if (randomCheck >= 8) {prohibitedItem = true;}
+        if (randomCheck % 10 < 3) {overWeight = true;}
+
+        if (explosive) {
+            cout << "CRITICAL SECURITY ALERT: Potential Explosives detected in Checked Bag (ID: " << bagID << ")!!" << endl;
+            cout << "Immediate intervention required. Bag isolated for further investigation." << endl;
+        }
+
+        if (prohibitedItem){
+            cout << "SECURITY WARNING: Potentially Dangerous Items detected in Checked Bag (ID: " << bagID << ")." << endl;
+            cout << "Bag requires detailed manual inspection by security personnel." << endl;
+        }
+    
+        if (overWeight) {
+            cout << "NOTE: Checked Bag (ID: " << bagID << ") exceeds weight limits." << endl;
+            cout << "Additional fees or handling may be required." << endl;
+        }
+
+        else{
+            cout << "Checked Bag (ID: " << bagID << ") successfully passed comprehensive security screening." << endl;
+        }
+    }
+    
+    bool overheadBinSpace(){ //done
+        if (overheadBinArray[117] != " "){return false;}
+        else{return true;}
+    }
+
+    void addBagToOverheadBin(string bagID){ //done, but double check
+        if (overheadBinSpace()){
+            for (int i = 0; i < 118; i++){
+                if (overheadBinArray[i] == ""){
+                    overheadBinArray[i] = bagID;
+                    updateStatus(bagID, "In Overhead Bin");
                 }
             }
-        } else {
-            std::cout << "Passenger not found.\n";
         }
-    }
-    BaggageSystem() 
-        : processingQueue(
-            [](Bag* a, Bag* b) { return !a->isPriority() && b->isPriority(); }
-        )
-        , gen(rd())
-        , errorDist(0.0, 1.0) {}
-
-    void addFlight(Flight* flight) {
-        flights[flight->getFlightID()] = flight;
-    }
-
-    void addPassenger(Passenger* passenger) {
-        passengers[passenger->getPassengerID()] = passenger;
-    }
-
-    Bag* checkInBag(const std::string& passengerID, 
-                    const std::string& flightID,
-                    bool priority) {
-        static int bagCounter = 1;
-        std::string bagID = "BAG" + std::to_string(bagCounter++);
-        
-        Bag* newBag = new Bag(bagID, passengerID, flightID, priority);
-        passengers[passengerID]->addBag(newBag);
-        flights[flightID]->addBag(newBag);
-        processingQueue.push(newBag);
-        
-        return newBag;
-    }
-
-    void processBags() {
-        while (!processingQueue.empty()) {
-            Bag* bag = processingQueue.top();
-            processingQueue.pop();
-
-            timer.advanceTime(5); // 5 minutes per bag processing
-
-            if (errorDist(gen) < ERROR_RATE) {
-                bag->markAsLost();
-                lostBags.push_back(bag);
-                std::cout << "Bag " << bag->getBagID() << " has been lost" << std::endl;
-            } else {
-                loadedBags.push_back(bag);
-                bag->updateLocation("Loaded");
-                bag->updateStatus("Loaded");
-            }
+        else if (!overheadBinSpace()){
+            cout << "There's no space. A flight attendent is coming to get your bag so it can be checked." << endl;
+            carryOns.removeBagFromList(bagID);
+            checkedInBags.addToListEnd(bagID);
+            addToRegularQueue(bagID);
         }
     }
 
-    void simulateFlightArrival(const std::string& flightID) {
-        Flight* flight = flights[flightID];
-        flight->updateStatus("Arrived");
-        timer.advanceTime(15); // 15 minutes for plane to taxi and park
-        
-        std::cout << "Flight " << flightID << " arrived at " 
-                  << timer.getFormattedTime() << std::endl;
-        
-        processBaggageCarousel(flightID);
+    void addBagToCarousel(string bagID){ //done
+        baggageCarousel.addToListEnd(bagID);
+        updateStatus(bagID, "Baggage Carousel");
     }
 
-    void processBaggageCarousel(const std::string& flightID) {
-        Flight* flight = flights[flightID];
-        std::cout << "Processing bags for flight " << flightID << std::endl;
+    void removeBagFromCarousel(string bagID){ //done
+        baggageCarousel.removeBagFromList(bagID);
+        updateStatus(bagID, "Picked Up by Passenger");
+    }
 
-        for (Bag* bag : flight->getCheckedBags()) {
-            if (!bag->isLost()) {
-                if (errorDist(gen) < ERROR_RATE) {
-                    bag->updateStatus("Delayed");
-                    timer.advanceTime(30);
-                    std::cout << "Bag " << bag->getBagID() << " delayed" << std::endl;
+    void addBagToUnclaimedList(string bagID){ //done
+        unclaimedBaggage.addToListEnd(bagID);
+        updateStatus(bagID, "Unclaimed Baggage");
+    }
+
+    void removeBagFromUnclaimedList(string bagID){ //done
+        unclaimedBaggage.removeBagFromList(bagID);
+        updateStatus(bagID, "Picked Up by Passenger.");
+    }
+
+    void checkForBagsLeftOnCarousel(){ //not done
+        if (baggageCarousel.isEmpty()){
+            return;
+        }
+        else{
+
+        }
+    }
+
+    void moveHeadToEndCarousel(){
+        baggageCarousel.moveHeadToEnd();
+    }
+
+    void moveFromCarouselToUnclaimed(string bagID){ //done
+        removeBagFromCarousel(bagID);
+        addBagToUnclaimedList(bagID);
+    }
+
+    void updateStatus(string bagID, string newLocation){ //done
+        bagStatusMap[bagID] = newLocation;
+        if (newLocation == "On Plane"){notifyPassenger(bagID, "Plane");}
+        else{notifyPassenger(bagID, newLocation);}
+        ofstream logFile("simulation_log.txt", ios::app);
+        if (logFile.is_open()){
+            logFile << "Bag ID " << bagID << " status updated to: " << newLocation << endl;
+            logFile.close();
+        } 
+        else{cerr << "Error: Unable to open log file." << endl;}
+    }
+    int getCarouselSize(){
+        return baggageCarousel.size();
+    }
+    void viewUnclaimedList(){unclaimedBaggage.viewList();} //done
+
+    bool checkInUnclaimedList(string bagID){//done
+        if (unclaimedBaggage.checkInList(bagID)){return true;}
+        else{return false;}
+    }
+
+    void viewCarousel(){baggageCarousel.viewList();} //done
+
+    string getStatus(string bagID){
+        if (bagStatusMap.find(bagID) != bagStatusMap.end()){return bagStatusMap[bagID];} 
+        else {return "null";}
+    }
+
+    void viewStatus(string bagID){ //done
+        if (bagStatusMap.find(bagID) != bagStatusMap.end()){ //Claude AI wrote this for me
+            cout << "Bag ID: " << bagID << " - Current Status: " << bagStatusMap[bagID] << endl;
+        } 
+        else {cout << "No status found for Bag ID: " << bagID << endl;}
+    }
+
+    void moveBagToEndOfCarousel(){
+    }
+
+    void notifyPassenger(string bagID, string message){
+        cout << "Passenger Notification: Bag " << bagID << " is now in the " << message << "." << endl;
+    } 
+};
+
+Bags globalBags;
+
+class AirportEmployeeUI{
+    private:
+    //LinkedList employeeLogins;
+    map<string, string> employeeLogins;
+
+    public: 
+    void run(){
+        string username;
+        string password;
+        cout << "Enter username: ";
+        cin >> username;
+        cout << endl << "Enter password: ";
+        cin >> password;
+        if (login(username, password)){
+            cout << endl << "Valid Login" << endl;
+            if (username == "ADMIN"){
+                while (true){
+                    showAdminMenu();
+                    if (menuReponse()){break;}
                 }
-                bag->updateLocation("Carousel");
-                timer.advanceTime(5);
+            }
+            else{
+                while (true){
+                    showMenu();
+                    if (menuReponse()){break;}
+                }
             }
         }
+        else{
+            cout << endl << "Invalid Login" << endl;
+            cout << endl;
+            return;
+        }
+        
     }
+    bool login(string user, string pass) { //ChatGPT wrote this function for me
+        auto it = employeeLogins.find(user);
+        return (it != employeeLogins.end() && it->second == pass);
+    }
+    void removeUser(string user) {//ChatGPT wrote this function for me
+        if (user == "ADMIN") {
+            cout << "You can't remove the admin user." << std::endl;
+            return;
+        }
 
-    void displayBagStatus(const std::string& bagID) {
-        for (const auto& flight : flights) {
-            for (const Bag* bag : flight.second->getCheckedBags()) {
-                if (bag->getBagID() == bagID) {
-                    std::cout << "Bag ID: " << bag->getBagID() << std::endl
-                              << "Status: " << bag->getStatus() << std::endl
-                              << "Location: " << bag->getLocation() << std::endl
-                              << "Flight: " << bag->getFlightID() << std::endl
-                              << "Priority: " << (bag->isPriority() ? "Yes" : "No") << std::endl;
+        auto it = employeeLogins.find(user); // Locate the user in the map
+        if (it != employeeLogins.end()){ // If user exists
+            string response;
+            cout << "Are you sure you want to remove user: " << user << "? Enter Y or N: ";
+            while (true) {
+                cin >> response;
+                if (response == "Y" || response == "y"){
+                    employeeLogins.erase(it); // Remove the user from the map
+                    cout << "User: " << user << " has been removed." << endl;
+                    break;
+                } 
+                else if (response == "N" || response == "n"){
+                    cout << "Okay! User was not removed." << endl;
                     return;
-                }
+                } 
+                else{cout << "Your response is invalid. Please enter Y or N: ";}
             }
-        }
-        std::cout << "Bag not found." << std::endl;
+        } 
+        else {cout << "User " << user << " is not in the database." << endl;}
+    }
+    void addUser(string user, string pass) {employeeLogins[user] = pass;} // done
+
+    void showMenu(){// done
+        cout << "-----Employee Interface-----" << endl;
+        cout << "1. Check in Bag(s)" << endl;
+        cout << "2. Check Bag(s) Status & Location" << endl;
+        cout << "3. Update Bag(s) Status & Location" << endl;
+        cout << "4. Update Bag(s) Type" << endl;
+        cout << "5. Add Bag(s) to Unclaimed Baggage List" << endl;
+        cout << "6. View Unclaimed Baggage List" << endl;
+        cout << "7. View Baggage Carousel" << endl;
+        cout << "8. Move Priority Checked In Bags to Plane" << endl;
+        cout << "9. Move Regular Checked In Bags to Plane" << endl;
+        cout << "10. Move All Checked In Bags to Plane" << endl;
+        cout << "11. Move All Bags from Plane to Carousel" << endl;
+        cout << "12. Exit" << endl;
     }
 
-    void displaySystemStatus() const {
-        std::cout << "=== Baggage System Status === Time: " 
-                  << timer.getFormattedTime() << std::endl;
-        std::cout << "Bags in processing queue: " << processingQueue.size() << std::endl;
-        std::cout << "Bags loaded: " << loadedBags.size() << std::endl;
-        std::cout << "Lost bags: " << lostBags.size() << std::endl;
-        std::cout << "Unclaimed bags: " << unclaimedBags.size() << std::endl;
+    bool menuReponse(){// done
+        string answer = "";
         
-        if (!lostBags.empty()) {
-            std::cout << "\nLost Bags Details:\n";
-            for (const Bag* bag : lostBags) {
-                std::cout << "Bag ID: " << bag->getBagID()
-                         << ", Flight: " << bag->getFlightID()
-                         << ", Priority: " << (bag->isPriority() ? "Yes" : "No")
-                         << std::endl;
-            }
+        cout << "Enter the menu number for the item in which you are wanting to access" << endl;
+        cin >> answer;
+
+        if (answer == "12"){return true;}
+        else if (answer == "1"){
+            int numberOfBags;
+            cout << "How many bags: " << endl;
+            cin >> numberOfBags;
+            menuOption1(numberOfBags);
+        }
+
+        else if (answer == "2"){
+            int numberOfBags;
+            cout << "How many bags: " << endl;
+            cin >> numberOfBags;
+            menuOption2(numberOfBags);
+        }
+
+        else if (answer == "3"){
+            int numberOfBags;
+            cout << "How many bags: " << endl;
+            cin >> numberOfBags;
+            menuOption3(numberOfBags);
+        }
+
+        else if (answer == "4"){
+            int numberOfBags;
+            cout << "How many bags: " << endl;
+            cin >> numberOfBags;
+            menuOption4(numberOfBags);
+        }
+
+        else if (answer == "5"){
+            int numberOfBags;
+            cout << "How many bags: " << endl;
+            cin >> numberOfBags;
+            menuOption5(numberOfBags);
+        }
+
+        else if (answer == "6"){menuOption6();}
+
+        else if (answer == "7"){menuOption7();}
+        else if (answer == "8"){menuOption8();}
+        else if (answer == "9"){menuOption9();}
+        else if (answer == "10"){
+            menuOption9();
+            menuOption8();
+        }
+        else if (answer == "11"){menuOption11();}
+        else if (answer == "13"){menuOption13();}
+        else{
+            cout << "Invalid Reponse" << endl;
+            menuReponse();
+        }
+
+        return false;
+    }
+
+    void showAdminMenu(){// done
+        cout << "-----Admin Interface-----" << endl;
+        cout << "1. Check in Bag(s)" << endl;
+        cout << "2. Check Bag(s) Status & Location" << endl;
+        cout << "3. Update Bag(s) Status & Location" << endl;
+        cout << "4. Update Bag(s) Type" << endl;
+        cout << "5. Add Bag(s) to Unclaimed Baggage List" << endl;
+        cout << "6. View Unclaimed Baggage List" << endl;
+        cout << "7. View Baggage Carousel" << endl;
+        cout << "8. Move Priority Checked In Bags to Plane" << endl;
+        cout << "9. Move Regular Checked In Bags to Plane" << endl;
+        cout << "10. Move All Checked In Bags to Plane" << endl;
+        cout << "11. Move All Bags from Plane to Carousel" << endl;
+        cout << "12. Exit" << endl;
+        cout << "13. Add New User" << endl;
+    }
+
+
+    void menuOption1(int numberOfBags){ //done
+        for (int i = 0; i < numberOfBags; i++){
+            globalBags.checkIn();
         }
     }
 
-    ~BaggageSystem() {
-        // Cleanup allocated memory
-        for (auto& flight : flights) {
-            delete flight.second;
+    void menuOption2(int numberOfBags){ // done
+        for (int i = 0; i < numberOfBags; i++){
+            string bag;
+            cout << "Enter Bag ID: ";
+            cin >> bag;
+            globalBags.viewStatus(bag);
         }
-        for (auto& passenger : passengers) {
-            delete passenger.second;
+    }
+
+    void menuOption3(int numberOfBags){ // done
+        for (int i = 0; i < numberOfBags; i++){
+            string bag;
+            string response;
+            cout << "Enter Bag ID: ";
+            cin >> bag;
+            if (globalBags.getStatus(bag) == "Regular Checked Bag Queue" || globalBags.getStatus(bag) == "Priority Queue" || globalBags.getStatus(bag) == "On Plane"){
+                cout << "You cannot update the status of Bag with ID: " << bag << " right now." << endl;
+                return;
+            }
+            cout << "What do you want the new status to be? " << endl;
+            cout << "1. In Unclaimed Baggage" << endl;
+            cout << "2. Bag Picked Up" << endl;
+            cin >> response;
+            if (globalBags.getStatus(bag) == "On Baggage Carousel" & response == "1"){globalBags.moveFromCarouselToUnclaimed(bag);}
+            else if (globalBags.getStatus(bag) == "On Baggage Carousel" & response == "2"){globalBags.removeBagFromCarousel(bag);}
+            else if (globalBags.getStatus(bag) == "null"){cout << "Bag Not Found" << endl;}
         }
-        // Cleanup bags in various containers
-        for (Bag* bag : loadedBags) delete bag;
-        for (Bag* bag : lostBags) delete bag;
-        for (Bag* bag : unclaimedBags) delete bag;
-        while (!processingQueue.empty()) {
-            delete processingQueue.top();
-            processingQueue.pop();
+    }
+
+    void menuOption4(int numberOfBags){// done
+        for (int i = 0; i < numberOfBags; i++){
+            cout << "When prompted, please enter what you'd like the bag to be changed to." << endl;
+            globalBags.checkIn();
         }
+    }
+
+    void menuOption5(int numberOfBags){//done?
+        string bagID;
+        for (int i = 0; i < numberOfBags; i++){
+            cout << "Please enter one Bag ID: " << endl;
+            cin >> bagID;
+            globalBags.removeBagFromCarousel(bagID);
+            globalBags.addBagToUnclaimedList(bagID);
+        }
+    }
+
+    void menuOption6(){globalBags.viewUnclaimedList();} // done
+
+    void menuOption7(){globalBags.viewCarousel();} // done
+
+    void menuOption8(){
+        globalBags.moveFromPriorityToPlane();
+        
+    } 
+
+    void menuOption9(){
+        globalBags.moveFromRegularToPlane();
+    } // done
+
+    void menuOption11(){globalBags.moveFromPlaneToCarousel();}
+
+    void menuOption13(){
+        string user;
+        string pass;
+        cout << "Enter username: ";
+        cin >> user;
+        cout << endl << "Enter password: ";
+        cin >> pass;
+        addUser(user, pass);
+        cout << endl << "User Added" << endl;
     }
 };
 
-// Add these after the existing includes
+class PassengerUI {
+    public:
+    bool login(string bagID) {
+        if (!globalBags.emptyCarryOnBags()){ 
+            if (globalBags.checkInCarryOns(bagID)){
+                cout << "Login Successful!" << endl;
+                return true;
+            }
+        }
+        if (globalBags.emptyCheckedInBags()){
+            cout << "Login Failed. Invalid Bag ID." << endl;
+            return false;
+        } 
+        else{
+            if (globalBags.checkInCheckedInBags(bagID)) {
+                cout << "Login Successful!" << endl;
+                return true;
+            } 
+            else {
+                cout << "Login Failed. Invalid Bag ID." << endl;
+                return false;
+            }
+        }
 
-
-// Add these user interface classes before the main() function
-
-class UserInterface {
-protected:
-    BaggageSystem& system;
-
-    void clearScreen() {
-        #ifdef _WIN32
-            system("cls");
-        #else
-            //system("clear");
-        #endif
-    }
-
-    void waitForEnter() {
-        std::cout << "\nPress Enter to continue...";
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    }
-
-    std::string getInput(const std::string& prompt) {
-        std::string input;
-        std::cout << prompt;
-        std::getline(std::cin, input);
-        return input;
-    }
-
-public:
-    UserInterface(BaggageSystem& sys) : system(sys) {}
-    virtual void showMenu() = 0;
-    virtual ~UserInterface() = default;
-};
-
-class PassengerInterface : public UserInterface {
-private:
-    std::string passengerID;
-    
-    void checkInBaggage() {
-        std::string flightID = getInput("Enter your flight number: ");
         
-        std::string priorityInput;
-        bool priority = false;
-        do {
-            priorityInput = getInput("Do you want priority baggage handling? (y/n): ");
-        } while (priorityInput != "y" && priorityInput != "n");
         
-        priority = (priorityInput == "y");
-        
-        Bag* bag = system.checkInBag(passengerID, flightID, priority);
-        std::cout << "\nBag checked in successfully!\n";
-        std::cout << "Your bag ID is: " << bag->getBagID() << "\n";
-        
-        waitForEnter();
-    }
-    
-    void trackBaggage() {
-        std::string bagID = getInput("Enter your bag ID: ");
-        system.displayBagStatus(bagID);
-        waitForEnter();
     }
 
-public:
-    PassengerInterface(BaggageSystem& sys) : UserInterface(sys) {
-        clearScreen();
-        std::cout << "=== Passenger Login ===\n";
-        passengerID = getInput("Enter your Passenger ID: ");
+    void showMenu() {
+        cout << "-----Passenger Interface-----" << endl;
+        cout << "1. Check Bag Status" << endl;
+
+        cout << "2. Check Unclaimed Baggage" << endl;
+        cout << "3. Report Bag Concerns" << endl;
+        cout << "4. Exit" << endl;
     }
 
-    void showMenu() override {
+    void menuResponse(string bagID) {
         while (true) {
-            clearScreen();
-            std::cout << "=== Passenger Menu ===\n"
-                      << "1. Check in baggage\n"
-                      << "2. Track baggage\n"
-                      << "3. View my bags\n"
-                      << "4. Log out\n"
-                      << "\nEnter your choice (1-4): ";
-
-            std::string choice = getInput("");
+            showMenu();
             
+            string choice;
+            cout << "Enter your choice (1-5): ";
+            cin >> choice;
+
             if (choice == "1") {
-                checkInBaggage();
+                checkBagStatus(bagID);
             }
             else if (choice == "2") {
-                trackBaggage();
+                checkUnclaimedBaggage(bagID);
             }
             else if (choice == "3") {
-                system.displayPassengerBags(passengerID);
-                waitForEnter();
+                reportBagConcerns(bagID);
             }
             else if (choice == "4") {
+                cout << "Thank you for using our service. Goodbye!" << endl;
                 break;
             }
             else {
-                std::cout << "Invalid choice. Please try again.\n";
-                waitForEnter();
+                cout << "Invalid choice. Please try again." << endl;
             }
         }
     }
-};
 
-class EmployeeInterface : public UserInterface {
-private:
-    std::string employeeID;
-    
-    void processFlightArrival() {
-        std::string flightID = getInput("Enter flight number to process: ");
-        system.simulateFlightArrival(flightID);
-        waitForEnter();
-    }
-    
-    void viewSystemStatus() {
-        system.displaySystemStatus();
-        waitForEnter();
-    }
-    
-    void searchBag() {
-        std::string bagID = getInput("Enter bag ID to search: ");
-        system.displayBagStatus(bagID);
-        waitForEnter();
-    }
-    
-    void processBags() {
-        system.processBags();
-        std::cout << "Bags processed successfully!\n";
-        waitForEnter();
+    void checkBagStatus(string bagID) {
+        globalBags.viewStatus(bagID);
     }
 
-public:
-    EmployeeInterface(BaggageSystem& sys) : UserInterface(sys) {
-        clearScreen();
-        std::cout << "=== Employee Login ===\n";
-        employeeID = getInput("Enter your Employee ID: ");
+    void checkUnclaimedBaggage(string bagID) {
+        cout << "Unclaimed Baggage List:" << endl;
+        globalBags.checkInUnclaimedList(bagID);
     }
 
-    void showMenu() override {
-        while (true) {
-            clearScreen();
-            std::cout << "=== Employee Menu ===\n"
-                      << "1. Process flight arrival\n"
-                      << "2. View system status\n"
-                      << "3. Search for bag\n"
-                      << "4. Process bags in queue\n"
-                      << "5. Add new flight\n"
-                      << "6. Log out\n"
-                      << "\nEnter your choice (1-6): ";
+    void reportBagConcerns(string bagID) {
+        int choice;
+        cout << "Bag Concerns Menu:" << endl;
+        cout << "1. Bag is Missing" << endl;
+        cout << "2. Bag is Damaged" << endl;
+        cout << "3. Incorrect Bag Received" << endl;
+        cout << "4. Other Concerns" << endl;
+        cout << "Enter your choice (1-4): ";
+        cin >> choice;
 
-            std::string choice = getInput("");
-            
-            if (choice == "1") {
-                processFlightArrival();
-            }
-            else if (choice == "2") {
-                viewSystemStatus();
-            }
-            else if (choice == "3") {
-                searchBag();
-            }
-            else if (choice == "4") {
-                processBags();
-            }
-            else if (choice == "5") {
-                addNewFlight();
-            }
-            else if (choice == "6") {
+        switch(choice) { //Claude AI wrote the switch cases fr me 
+            case 1:
+                globalBags.addBagToUnclaimedList(bagID);
+                globalBags.removeBagFromCarousel(bagID);
+                cout << "Your bag has been reported as missing. Our staff will investigate." << endl;
                 break;
-            }
-            else {
-                std::cout << "Invalid choice. Please try again.\n";
-                waitForEnter();
-            }
+            case 2:
+                cout << "We're sorry to hear your bag is damaged. Please speak with our customer service." << endl;
+                break;
+            case 3:
+                cout << "Please contact our staff to resolve the bag mix-up." << endl;
+                break;
+            case 4:
+                cout << "Please describe your concern to our customer service representative." << endl;
+                break;
+            default:
+                cout << "Invalid choice." << endl;
         }
     }
 
-    void addNewFlight() {
-        std::string flightID = getInput("Enter flight number: ");
-        std::string departure = getInput("Enter departure city: ");
-        std::string arrival = getInput("Enter arrival city: ");
-        std::string depTime = getInput("Enter departure time (HH:MM): ");
-        std::string arrTime = getInput("Enter arrival time (HH:MM): ");
+    void run() {
+        while (true){
+            cout << "-----Passenger Login-----" << endl;
+            string bagID;
+            cout << "Enter Bag ID Number: ";
+            cin >> bagID;
+            if (login(bagID)){
+                menuResponse(bagID);
+                break;
+            } 
+            else{break;}
+        }
+    }
+};
 
-        Flight* newFlight = new Flight(flightID, departure, arrival, depTime, arrTime);
-        system.addFlight(newFlight);
+class Simulation {
+    private:
+    static const int MAX_BAGS = 150; 
+    string carryOnBags[MAX_BAGS];
+    int carryOnCount = 0;
+    int priorityCount = 0;
+    int regularCount = 0;
+    AirportEmployeeUI ui;
+
+    public:
+    void inputCarryOnBags() {
+        int numBags;
+        cout << "How many Carry-On Bags will be processed?" << endl;
+        while (true){
+            cout << "Must be less than 150" << endl;
+            cin >> numBags;
+            if(numBags > 150){continue;}
+            else{break;}
+        }
+        carryOnCount = numBags;
+        for (int i = 0; i < numBags; i++) {
+            string bag;
+            cout << "Enter Carry-On Bag ID " << i + 1 << ": ";
+            cin >> bag;
+            carryOnBags[i] = bag;
+            globalBags.addToCarryOns(bag);
+            globalBags.updateStatus(bag, "Carry On");
+        }
         
-        std::cout << "\nFlight added successfully!\n";
-        waitForEnter();
+    }
+
+    void inputPriorityBags() {
+        int numBags;
+        cout << "How many Priority Bags will be processed?" << endl;
+        while (true){
+            cout << "Must be less than 150" << endl;
+            cin >> numBags;
+            if(numBags > 150){continue;}
+            else{break;}
+        }
+        priorityCount = numBags;
+        for (int i = 0; i < numBags; i++) {
+            string bag;
+            cout << "Enter Priority Bag ID " << i + 1 << ": ";
+            cin >> bag;
+            globalBags.addToPriorityQueue(bag);
+            globalBags.addToCheckedInBags(bag);
+        }
+    }
+
+    void inputRegularBags() {
+        int numBags;
+        cout << "How many Regular Bags will be processed?" << endl;
+        while (true){
+            cout << "Must be less than 150" << endl;
+            cin >> numBags;
+            if(numBags > 150){continue;}
+            else{break;}
+        }
+        regularCount = numBags;
+        
+        for (int i = 0; i < numBags; i++) {
+            string bag;
+            cout << "Enter Regular Bag ID " << i + 1 << ": ";
+            cin >> bag;
+            globalBags.addToRegularQueue(bag);
+            globalBags.addToCheckedInBags(bag);
+            globalBags.updateStatus(bag, "Checked In");
+        }
+    }
+
+    void processCarryOnBags(){
+        cout << "--- Processing Carry-On Bags ---" << endl;
+        for (int i = 0; i < carryOnCount; i++) {
+            globalBags.CarryOnBagSecurityCheck(carryOnBags[i]);
+            globalBags.addBagToOverheadBin(carryOnBags[i]);
+            globalBags.updateStatus(carryOnBags[i], "Carry On with Passenger");
+            // Simulate small delay
+            this_thread::sleep_for(chrono::milliseconds(500));
+        }
+    }
+
+    void processPriorityBags() {
+        cout << "--- Processing Priority Bags ---" << endl;
+            ui.menuOption8();
+            // Simulate small delay
+            this_thread::sleep_for(chrono::milliseconds(500));
+    }
+
+    void processRegularBags() {
+        cout << "--- Processing Regular Bags ---" << endl;
+        ui.menuOption9();
+        this_thread::sleep_for(chrono::milliseconds(500));
+    }
+
+    void moveToCarousel() {
+        cout << "--- Moving Bags to Carousel ---" << endl;
+        globalBags.moveFromPlaneToCarousel();
+    }
+
+    void randomlyPickUpBags() {
+        cout << "--- Picking Up Bags from Carousel ---" << endl;
+
+        // If the carousel is empty, exit the function
+        if (globalBags.isCarouselEmpty()) {
+            cout << "No bags on the carousel to pick up." << endl;
+            return;
+        }
+
+        int initialSize = globalBags.getCarouselSize(); // Assume this method exists
+
+        // Iterate through the carousel based on its initial size
+        for (int i = 0; i < initialSize; i++) {
+            string bagID = globalBags.peekCarousel(); // Get the first bag on the carousel
+            int randomChance = rand() % 100;         // Generate a random number between 0 and 99
+
+            if (randomChance < 95) { // 95% chance the bag is picked up
+                cout << "Bag ID: " << bagID << " picked up by passenger." << endl;
+                globalBags.removeBagFromCarousel(bagID); // Remove the bag from the carousel
+            } else {
+                cout << "Bag ID: " << bagID << " remains on the carousel." << endl;
+                globalBags.moveHeadToEndCarousel(); // Move the head node to the end of the list
+            }
+        }
+    }
+
+
+
+
+    void checkAndMoveToUnclaimedBags() {
+        cout << "--- Checking for Unclaimed Bags on Carousel ---" << endl;
+        string bagID;
+        while (!globalBags.emptyCheckedInBags()) {
+            // Check the status of each bag on the carousel
+            bagID = globalBags.peekCarousel();
+            cout << "Bag ID: " << bagID << " still on the carousel. Moving to unclaimed baggage." << endl;
+            globalBags.moveFromCarouselToUnclaimed(bagID);
+        }
+    }
+
+    void runSimulation(){
+        // Reset counts
+        carryOnCount = 0;
+        priorityCount = 0;
+        regularCount = 0;
+
+        // Input all bag types
+        inputCarryOnBags();
+        inputPriorityBags();
+        inputRegularBags();
+
+        // Process bags
+        processCarryOnBags();
+        processRegularBags();
+        processPriorityBags();
+
+        // Move to carousel
+        moveToCarousel();
+        randomlyPickUpBags();
+        checkAndMoveToUnclaimedBags();
+        // Log simulation completion
+        cout << "--- Simulation Complete ---" << endl;
+        globalBags.logEvent("Full Baggage Handling Simulation Completed");
     }
 };
 
-// Add these methods to the BaggageSystem class
-/*
-class BaggageSystem {
-    // ... (previous code remains the same)
 
-public:
-    // Add these new methods
+int main(){
+    srand(time(nullptr));
+    AirportEmployeeUI employeeUI;
+    PassengerUI passengerUI;
+    Simulation sim;
     
-};
-*/
-// Replace the main() function with this new version
+    globalBags.createArray();
 
-int main() {
-    BaggageSystem system;
+    employeeUI.addUser("ADMIN", "Pass123"); //creates admin account
 
-    // Pre-populate some test data
-    Flight* flight1 = new Flight("FL001", "New York", "Los Angeles", "10:00", "13:00");
-    Flight* flight2 = new Flight("FL002", "Los Angeles", "Chicago", "14:00", "19:00");
-    system.addFlight(flight1);
-    system.addFlight(flight2);
 
-    Passenger* passenger1 = new Passenger("P001", "John Doe");
-    Passenger* passenger2 = new Passenger("P002", "Jane Smith");
-    system.addPassenger(passenger1);
-    system.addPassenger(passenger2);
-
-    while (true) {
-        //system("clear");  // or system("cls") on Windows
-        std::cout << "=== Airport Baggage System ===\n"
-                  << "1. Passenger Login\n"
-                  << "2. Employee Login\n"
-                  << "3. Exit\n"
-                  << "\nEnter your choice (1-3): ";
-
-        std::string choice;
-        std::getline(std::cin, choice);
-
-        if (choice == "1") {
-            PassengerInterface passengerUI(system);
-            passengerUI.showMenu();
-        }
-        else if (choice == "2") {
-            EmployeeInterface employeeUI(system);
-            employeeUI.showMenu();
-        }
-        else if (choice == "3") {
-            std::cout << "Thank you for using the Airport Baggage System!\n";
-            break;
-        }
-        else {
-            std::cout << "Invalid choice. Please try again.\n";
-            std::cout << "Press Enter to continue...";
-            std::cin.get();
-        }
+    while (true){
+        cout << "1. Employee Login" << endl;
+        cout << "2. Passenger Login" << endl;
+        cout << "3. Run Baggage Simulation" << endl;
+        cout << "4. Exit" << endl;
+        string response;
+        cin >> response;
+        if (response == "1"){employeeUI.run();}
+        else if(response == "2"){passengerUI.run();}
+        else if(response == "3"){sim.runSimulation();}
+        else if(response == "4"){break;}
+        else{cout << "Invalid Reponse." << endl;}
     }
-
     return 0;
 }
-/*
-int main() {
-    BaggageSystem system;
-
-    // Create flights
-    Flight* flight1 = new Flight("FL001", "New York", "Los Angeles", "10:00", "13:00");
-    Flight* flight2 = new Flight("FL002", "Los Angeles", "Chicago", "14:00", "19:00");
-    system.addFlight(flight1);
-    system.addFlight(flight2);
-
-    // Create passengers
-    Passenger* passenger1 = new Passenger("P001", "John Doe");
-    Passenger* passenger2 = new Passenger("P002", "Jane Smith");
-    Passenger* passenger3 = new Passenger("P003", "Bob Johnson");
-    system.addPassenger(passenger1);
-    system.addPassenger(passenger2);
-    system.addPassenger(passenger3);
-
-    // Check in bags with different priorities
-    Bag* bag1 = system.checkInBag("P001", "FL001", true);  // Priority bag
-    Bag* bag2 = system.checkInBag("P002", "FL001", false); // Regular bag
-    Bag* bag3 = system.checkInBag("P003", "FL002", true);  // Priority bag
-
-    // Display initial status
-    system.displaySystemStatus();
-
-    // Process bags
-    system.processBags();
-    system.displaySystemStatus();
-
-    // Simulate flight arrivals
-    system.simulateFlightArrival("FL001");
-    system.simulateFlightArrival("FL002");
-
-    // Display final status and individual bag statuses
-    system.displaySystemStatus();
-    system.displayBagStatus(bag1->getBagID());
-    system.displayBagStatus(bag2->getBagID());
-    system.displayBagStatus(bag3->getBagID());
-
-    return 0;
-}
-*/
