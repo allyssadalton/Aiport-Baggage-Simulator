@@ -234,6 +234,10 @@ class Bags{
     
     public:
 
+    bool emptyCarryOnBags(){
+        if(carryOns.isEmpty()){return true;}
+        else{return false;}
+    }
     bool emptyCheckedInBags(){
         if(checkedInBags.isEmpty()){return true;}
         else{return false;}
@@ -335,6 +339,10 @@ class Bags{
         if (checkedInBags.checkInList(bagID)){return true;}
         else{return false;}
     }
+    bool checkInCarryOns(string bagID){
+        if (carryOns.checkInList(bagID)){return true;}
+        else{return false;}
+    }
     
     //Claude helped me with this function so it could be a bit more extensive?
     void CarryOnBagSecurityCheck(string bagID){ //technically done, but could be cooler
@@ -396,7 +404,10 @@ class Bags{
     void addBagToOverheadBin(string bagID){ //done, but double check
         if (overheadBinSpace()){
             for (int i = 0; i < 118; i++){
-                if (overheadBinArray[i] == ""){overheadBinArray[i] = bagID;}
+                if (overheadBinArray[i] == ""){
+                    overheadBinArray[i] = bagID;
+                    updateStats(bagID, "In Overhead Bin");
+                }
             }
         }
         else if (!overheadBinSpace()){
@@ -703,27 +714,29 @@ class AirportEmployeeUI{
 class PassengerUI {
     public:
     bool login(string bagID) {
-        //string bagID;
-        //cout << "-----Passenger Login-----" << endl;
-        //cout << "Enter your Bag ID to login: ";
-        //cin >> bagID;
-
-        cout << "Debug: Checking if `checkedInBags` is empty..." << endl;
-        if (globalBags.emptyCheckedInBags()){
-            cout << "Debug: `checkedInBags` is empty." << endl;
-        } 
-        else{
-            cout << "Debug: `checkedInBags` is not empty." << endl;
+        if (!globalBags.emptyCarryOnBags()){ 
+            if (globalBags.checkInCarryOns(bagID)){
+                cout << "Login Successful!" << endl;
+                return true;
+            }
         }
-
-        cout << "Debug: Checking if Bag ID exists in `checkedInBags`..." << endl;
-        if (globalBags.checkInCheckedInBags(bagID)) {
-            cout << "Login Successful!" << endl;
-            return true;
-        } else {
+        if (globalBags.emptyCheckedInBags()){
             cout << "Login Failed. Invalid Bag ID." << endl;
             return false;
+        } 
+        else{
+            if (globalBags.checkInCheckedInBags(bagID)) {
+                cout << "Login Successful!" << endl;
+                return true;
+            } 
+            else {
+                cout << "Login Failed. Invalid Bag ID." << endl;
+                return false;
+            }
         }
+
+        
+        
     }
     /*
     bool validateLogin(string bagID) {
@@ -734,6 +747,7 @@ class PassengerUI {
     void showMenu() {
         cout << "-----Passenger Interface-----" << endl;
         cout << "1. Check Bag Status" << endl;
+
         cout << "2. Check Unclaimed Baggage" << endl;
         cout << "3. Report Bag Concerns" << endl;
         cout << "4. Exit" << endl;
@@ -806,22 +820,16 @@ class PassengerUI {
     }
 
     void run() {
-        while (true) {
-            cout << "Debug: Entering Passenger Login loop..." << endl;
+        while (true){
             cout << "-----Passenger Login-----" << endl;
             string bagID;
             cout << "Enter Bag ID Number: ";
             cin >> bagID;
-
-            if (login(bagID)) {
-                
-                cout << "Debug: Attempting to open Passenger Menu..." << endl;
+            if (login(bagID)){
                 menuResponse(bagID);
-                break; // Exit the loop after the menu interaction
-            } else {
-                cout << "Debug: Login failed, exiting loop." << endl;
                 break;
-            }
+            } 
+            else{break;}
         }
     }
 
