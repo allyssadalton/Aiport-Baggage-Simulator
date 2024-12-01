@@ -46,30 +46,28 @@ class LinkedList{
 
     }
 
-    bool checkInList(string value){//done
+    bool checkInList(string value) {
         Node* curr = head;
-        Node* val = new Node(value);
-        while (curr -> next != nullptr){
-            if (curr -> next == val){return true;}
-            else{continue;}
+        while (curr != nullptr){
+            if (curr -> val == value) {return true;}
+            curr = curr -> next;
         }
         return false;
     }
 
-    void addToListEnd(string value){ //done
-        Node* newNode = new Node(value);
-        if (head == nullptr){
-            head = newNode;
-        }   
-        else{
-            Node* temp = head;
-            while (temp -> next != nullptr){
-                temp = temp -> next;
-            }
-            temp = new Node(value);
-        }
 
+    void addToListEnd(string value) { 
+        Node* val = new Node(value);
+        if (head == nullptr){
+            head = val;
+            tail = val;
+        } 
+        else{
+            tail -> next = val;
+            tail = val;
+        }
     }
+
 
     void removeBagFromList(string bagID){ //done
         Node* bag = new Node(bagID);
@@ -710,13 +708,20 @@ class PassengerUI {
         cout << "Enter your Bag ID to login: ";
         cin >> bagID;
 
-        if (!globalBags.emptyCheckedInBags() && globalBags.checkInCheckedInBags(bagID)) {
+        cout << "Debug: Checking if `checkedInBags` is empty..." << endl;
+        if (globalBags.emptyCheckedInBags()){
+            cout << "Debug: `checkedInBags` is empty." << endl;
+        } 
+        else{
+            cout << "Debug: `checkedInBags` is not empty." << endl;
+        }
+
+        cout << "Debug: Checking if Bag ID exists in `checkedInBags`..." << endl;
+        if (globalBags.checkInCheckedInBags(bagID)) {
             cout << "Login Successful!" << endl;
             return true;
-        }
-        else{
+        } else {
             cout << "Login Failed. Invalid Bag ID." << endl;
-            cout << endl;
             return false;
         }
     }
@@ -802,16 +807,23 @@ class PassengerUI {
 
     void run() {
         while (true) {
+            cout << "Debug: Entering Passenger Login loop..." << endl;
             if (login()) {
-                string bagID; // This would be the bag ID used to login
+                string bagID;
                 cout << "Enter Bag ID Number: ";
                 cin >> bagID;
+
+                cout << "Debug: Attempting to open Passenger Menu..." << endl;
                 menuResponse(bagID);
-                break; // Exit after successful interaction
+                break; // Exit the loop after the menu interaction
+            } else {
+                cout << "Debug: Login failed, exiting loop." << endl;
+                break;
             }
-            else{break;}
         }
     }
+
+
 };
 
 int main(){
