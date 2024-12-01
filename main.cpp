@@ -358,7 +358,7 @@ class Bags{
     //Claude helped me with this function so it could be a bit more extensive?
     void CarryOnBagSecurityCheck(string bagID){ //technically done, but could be cooler
         bool prohibitedItem = false;
-
+        updateStatus(bagID, "Security Check");
         //x-ray
         cout << "Scanning bag (Bag ID: " << bagID << ") through X-Ray Machine." << endl;
 
