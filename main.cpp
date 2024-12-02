@@ -306,9 +306,10 @@ class Bags{
     void moveFromPriorityToPlane(){
         while (priorityQueue.getSize() != 0){
             string bag = priorityQueue.peek();
+            priorityQueue.dequeue();
             cout << "Bag ID: " << bag <<  "Moved from Priority Queue to Security Check." << endl;
             CheckedBagSecurityCheck(bag);
-            onPlaneStack.push(priorityQueue.dequeue());
+            onPlaneStack.push(bag);
             cout << "Bag ID: " << bag <<  "Moved from Security Check to Plane." << endl;
             updateStatus(bag, "On Plane");
         }
@@ -317,9 +318,10 @@ class Bags{
     void moveFromRegularToPlane(){
         while (regularQueue.getSize() != 0){
             string bag = priorityQueue.peek();
+            regularQueue.dequeue();
             cout << "Bag ID: " << bag <<  "Moved from Checked Bag Queue to Security Check." << endl;
             CheckedBagSecurityCheck(bag);
-            onPlaneStack.push(regularQueue.dequeue());
+            onPlaneStack.push(bag);
             cout << "Bag ID: " << bag <<  "Moved from Security Check to Plane." << endl;
             updateStatus(bag, "On Plane");
         }
@@ -509,8 +511,7 @@ class Bags{
             return;
         }
         else{
-            moveFromCarouselToUnclaimed(baggageCarousel.returnHead);
-            
+            moveFromCarouselToUnclaimed(baggageCarousel.returnHead());
         }
     }
 
