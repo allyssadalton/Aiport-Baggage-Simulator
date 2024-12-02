@@ -9,7 +9,7 @@
 
 using namespace std;
 
-class Node{ //clean
+class Node{ 
     public:
     string val;
     Node* next;
@@ -20,7 +20,7 @@ class Node{ //clean
     }
 };
 
-class LinkedList{ //clean
+class LinkedList{ 
     private:
     Node* head;
     Node* tail;
@@ -154,7 +154,7 @@ class LinkedList{ //clean
     }
 };
 
-class Stacks{//clean
+class Stacks{
     private:
     Node* top;
     
@@ -188,7 +188,7 @@ class Stacks{//clean
     }  
 };
 
-class Queues{//clean
+class Queues{
     private:
     Node* head;
     Node* tail;
@@ -241,7 +241,7 @@ class Queues{//clean
 };
 
 
-class Bags{ //clean but one function is undone
+class Bags{ 
     private: 
     string overheadBinArray[118] = {}; //array to keep track of bags in overhead bins
     LinkedList baggageCarousel; //holds all luggage on baggage carousel
@@ -413,7 +413,7 @@ class Bags{ //clean but one function is undone
         else{return false;}
     }
     
-    //Claude helped me with this function so it could be a bit more extensive?
+    //Claude helped me with this function so it could be a bit more extensive
     void CarryOnBagSecurityCheck(string bagID){ //technically done, but could be cooler
         bool prohibitedItem = false;
         updateStatus(bagID, "Security Check");
@@ -504,11 +504,13 @@ class Bags{ //clean but one function is undone
         updateStatus(bagID, "Picked Up by Passenger.");
     }
 
-    void checkForBagsLeftOnCarousel(){ //not done
+    void checkForBagsLeftOnCarousel(){ 
         if (baggageCarousel.isEmpty()){
             return;
         }
         else{
+            moveFromCarouselToUnclaimed(baggageCarousel.returnHead);
+            
         }
     }
 
@@ -563,7 +565,7 @@ class Bags{ //clean but one function is undone
 
 Bags globalBags;
 
-class AirportEmployeeUI{//clean
+class AirportEmployeeUI{
     private:
     map<string, string> employeeLogins;
 
@@ -796,7 +798,7 @@ class AirportEmployeeUI{//clean
     }
 };
 
-class PassengerUI{ //clean
+class PassengerUI{
     public:
     bool login(string bagID){
         if (!globalBags.emptyCarryOnBags()){ 
