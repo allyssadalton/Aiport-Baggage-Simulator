@@ -241,7 +241,7 @@ class Queues{//clean
 };
 
 
-class Bags{
+class Bags{ //clean but one function is undone
     private: 
     string overheadBinArray[118] = {}; //array to keep track of bags in overhead bins
     LinkedList baggageCarousel; //holds all luggage on baggage carousel
@@ -265,6 +265,7 @@ class Bags{
         if (baggageCarousel.isEmpty()){return true;}
         else{return false;}
     }
+
     void createArray(){
         for (int i = 0; i < 118; i++){overheadBinArray[i] = " ";}
     }
@@ -278,9 +279,7 @@ class Bags{
         else{cerr << "Error: Unable to open log file." << endl;}
     }
 
-    void addToCheckedInBags(string bagID){
-        checkedInBags.addToListEnd(bagID);
-    }
+    void addToCheckedInBags(string bagID){checkedInBags.addToListEnd(bagID);}
 
     void randomBagEvents(string bagID){
         int event = rand() % 100;
@@ -334,11 +333,9 @@ class Bags{
         }
     }
 
-    void addToCarryOns(string bagID){
-        carryOns.addToListEnd(bagID);
-    }
+    void addToCarryOns(string bagID){carryOns.addToListEnd(bagID);}
 
-    void checkIn(){//may or may not be done
+    void checkIn(){
         string bag;
         string response;
         cout << "Enter Bag ID: " << endl;
@@ -389,21 +386,19 @@ class Bags{
 
     }
 
-    string peekCarousel(){
-        return baggageCarousel.returnHead();
-    }
+    string peekCarousel(){return baggageCarousel.returnHead();}
 
-    void addToPriorityQueue(string bagID){ //done
+    void addToPriorityQueue(string bagID){
         priorityQueue.enqueue(bagID);
         updateStatus(bagID, "Priority Queue");
     }
 
-    void addToRegularQueue(string bagID){ //done
+    void addToRegularQueue(string bagID){ 
         regularQueue.enqueue(bagID);
         updateStatus(bagID, "Regular Checked Bag Queue");
     }
 
-    void addToCheckedBagsLoadedOnPlaneStack(string bagID){ // done
+    void addToCheckedBagsLoadedOnPlaneStack(string bagID){ 
         onPlaneStack.push(bagID);
         updateStatus(bagID, "On Plane");
     }
@@ -470,12 +465,12 @@ class Bags{
         }
     }
     
-    bool overheadBinSpace(){ //done
+    bool overheadBinSpace(){
         if (overheadBinArray[117] != " "){return false;}
         else{return true;}
     }
 
-    void addBagToOverheadBin(string bagID){ //done, but double check
+    void addBagToOverheadBin(string bagID){ 
         if (overheadBinSpace()){
             for (int i = 0; i < 118; i++){
                 if (overheadBinArray[i] == ""){
@@ -492,22 +487,19 @@ class Bags{
         }
     }
 
-    void addBagToCarousel(string bagID){ //done
+    void addBagToCarousel(string bagID){ 
         baggageCarousel.addToListEnd(bagID);
         updateStatus(bagID, "Baggage Carousel");
     }
 
-    void removeBagFromCarousel(string bagID){ //done
-        baggageCarousel.removeBagFromList(bagID);
-        //updateStatus(bagID, "Picked Up by Passenger");
-    }
+    void removeBagFromCarousel(string bagID){baggageCarousel.removeBagFromList(bagID);}
 
-    void addBagToUnclaimedList(string bagID){ //done
+    void addBagToUnclaimedList(string bagID){
         unclaimedBaggage.addToListEnd(bagID);
         updateStatus(bagID, "Unclaimed Baggage");
     }
 
-    void removeBagFromUnclaimedList(string bagID){ //done
+    void removeBagFromUnclaimedList(string bagID){
         unclaimedBaggage.removeBagFromList(bagID);
         updateStatus(bagID, "Picked Up by Passenger.");
     }
@@ -517,20 +509,17 @@ class Bags{
             return;
         }
         else{
-
         }
     }
 
-    void moveHeadToEndCarousel(){
-        baggageCarousel.moveHeadToEnd();
-    }
+    void moveHeadToEndCarousel(){baggageCarousel.moveHeadToEnd();}
 
-    void moveFromCarouselToUnclaimed(string bagID){ //done
+    void moveFromCarouselToUnclaimed(string bagID){ 
         removeBagFromCarousel(bagID);
         addBagToUnclaimedList(bagID);
     }
 
-    void updateStatus(string bagID, string newLocation){ //done
+    void updateStatus(string bagID, string newLocation){
         bagStatusMap[bagID] = newLocation;
         if (newLocation == "On Plane"){notifyPassenger(bagID, "Plane");}
         else{notifyPassenger(bagID, newLocation);}
@@ -542,13 +531,11 @@ class Bags{
         else{cerr << "Error: Unable to open log file." << endl;}
     }
 
-    int getCarouselSize(){
-        return baggageCarousel.size();
-    }
+    int getCarouselSize(){return baggageCarousel.size();}
 
-    void viewUnclaimedList(){unclaimedBaggage.viewList();} //done
+    void viewUnclaimedList(){unclaimedBaggage.viewList();}
 
-    bool checkInUnclaimedList(string bagID){//done
+    bool checkInUnclaimedList(string bagID){
         if (unclaimedBaggage.checkInList(bagID)){return true;}
         else{return false;}
     }
@@ -560,16 +547,14 @@ class Bags{
         else {return "null";}
     }
 
-    void viewStatus(string bagID){ //done
+    void viewStatus(string bagID){
         if (bagStatusMap.find(bagID) != bagStatusMap.end()){ //Claude AI wrote this for me
             cout << "Bag ID: " << bagID << " - Current Status: " << bagStatusMap[bagID] << endl;
         } 
         else {cout << "No status found for Bag ID: " << bagID << endl;}
     }
 
-    void moveBagToEndOfCarousel(){
-        baggageCarousel.moveHeadToEnd();
-    }
+    void moveBagToEndOfCarousel(){baggageCarousel.moveHeadToEnd();}
 
     void notifyPassenger(string bagID, string message){
         cout << "Passenger Notification: Bag " << bagID << " is now in the " << message << "." << endl;
