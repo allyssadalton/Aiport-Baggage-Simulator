@@ -6,11 +6,9 @@
 #include <thread> 
 #include <chrono>
 #include <fstream>
-
-
 using namespace std;
 
-class Node{
+class Node{ 
     public:
     string val;
     Node* next;
@@ -21,40 +19,38 @@ class Node{
     }
 };
 
-class LinkedList{
+class LinkedList{ 
     private:
     Node* head;
     Node* tail;
 
     public:
-    LinkedList(){ //done
+    LinkedList(){ 
         head = nullptr;
         tail = nullptr;
     }
 
-    ~LinkedList(){ //done
+    ~LinkedList(){ 
         Node* curr = head;
         while (curr != nullptr){
             Node* temp = curr -> next;
             delete curr;
             curr = nullptr;
             curr = temp;
-            
         }
-
     }
 
     string returnHead(){
-        return head -> val;
+        if (head == nullptr){return "";}
+        return head->val;
     }
 
-    bool isEmpty(){ //done
+    bool isEmpty(){ 
         if (head == nullptr){return true;}
         else{return false;}
-
     }
 
-    bool checkInList(string value) {
+    bool checkInList(string value){
         Node* curr = head;
         while (curr != nullptr){
             if (curr -> val == value) {return true;}
@@ -63,8 +59,7 @@ class LinkedList{
         return false;
     }
 
-
-    void addToListEnd(string value) { 
+    void addToListEnd(string value){ 
         Node* val = new Node(value);
         if (head == nullptr){
             head = val;
@@ -76,32 +71,31 @@ class LinkedList{
         }
     }
 
-
-    void removeBagFromList(string bagID){ //done
-        Node* bag = new Node(bagID);
+    void removeBagFromList(string bagID){
         if (head == nullptr){
-            cout << "Bag not in database. " << endl;
+            cout << "The list is empty. No bag to remove." << endl;
             return;
         }
-        else{
+        if (head -> val == bagID){
             Node* temp = head;
-            if (checkInList(bagID)){
-                while (temp != bag && temp -> next != nullptr){
-                    temp = temp -> next;
-                    if (temp == bag){
-                        delete temp;
-                        temp = nullptr;
-                    }
-                }
-            }
-            else{
-                cout << "Bag not in database. " << endl;
-                return;
-            }
+            head = head -> next;
+            if (head == nullptr){tail = nullptr;}
+            delete temp;
+            return;
         }
+        Node* current = head;
+        while (current -> next != nullptr && current -> next -> val != bagID){current = current -> next;}
+        if (current -> next == nullptr){
+            cout << "Bag ID: " << bagID << " not found in the list." << endl;
+            return;
+        }
+        Node* temp = current -> next;
+        current->next = temp -> next;
+        if (current->next == nullptr){tail = current;}
+        delete temp;
     }
 
-    void removeUserFromList(string username){ //done
+    void removeUserFromList(string username){
         Node* user = new Node(username);
         if (head == nullptr){
             cout << "User not in database. " << endl;
@@ -127,34 +121,25 @@ class LinkedList{
         }
     }
 
-    void moveHeadToEnd() {
-        if (head == nullptr || head->next == nullptr) {
-            // The list is empty or has only one node
-            cout << "No need to move the head. The list is either empty or has only one node." << endl;
+    void moveHeadToEnd(){
+        if (head == nullptr || head -> next == nullptr){
+            cout << "No need to move the head." << endl;
             return;
         }
-
-        Node* oldHead = head;      // Save the current head
-        head = head->next;         // Move head to the next node
-        oldHead->next = nullptr;   // Detach the old head
-
-        tail->next = oldHead;      // Link the old head to the tail
-        tail = oldHead;            // Update the tail pointer
-
-        cout << "Head node moved to the end of the list." << endl;
+        Node* oldHead = head;  
+        head = head -> next;        
+        oldHead -> next = nullptr;
+        tail -> next = oldHead;   
+        tail = oldHead;
     }
 
-
-    int size() {
+    int size(){
         int count = 0;
         Node* current = head;
-
-        // Traverse the list and count the nodes
         while (current != nullptr) {
             count++;
-            current = current->next;
+            current = current -> next;
         }
-
         return count;
     }
 
@@ -163,9 +148,9 @@ class LinkedList{
         if (head == nullptr){cout << "List Empty." << endl;}
         else{
             Node* temp = head;
-            while (temp != nullptr) { // Iterate until temp is null
-                cout << temp -> val << endl; // Print the node's data
-                temp = temp -> next; // Move to the next node
+            while (temp != nullptr){ 
+                cout << temp -> val << endl; 
+                temp = temp -> next; 
             }
         }
     }
@@ -179,18 +164,18 @@ class Stacks{
     Stacks(){top = nullptr;}
 
     ~Stacks() {
-        while (!isEmpty()) {pop();}
+        while (!isEmpty()){pop();}
     }   
 
     bool isEmpty(){return top == nullptr;}
 
-    void push(string value) {
+    void push(string value){
         Node* newNode = new Node(value);
         newNode -> next = top;
         top = newNode;
     }
 
-    string pop() {
+    string pop(){
         if (isEmpty()) {return "Empty";}
         string poppedValue = top -> val;
         Node* temp = top;
@@ -199,10 +184,10 @@ class Stacks{
         return poppedValue;
     }
 
-    string peek() {
-        if (isEmpty()) {return "Empty";}
+    string peek(){
+        if (isEmpty()){return "Empty";}
         return top -> val;
-    }   
+    }  
 };
 
 class Queues{
@@ -215,14 +200,14 @@ class Queues{
     Queues(){
         head = nullptr; 
         tail = nullptr;  
-        int size = 0;     
+        size = 0;     
     }
 
-    ~Queues() {
+    ~Queues(){
         while(!isEmpty()){dequeue();}
     }
 
-    void enqueue(string bagID) {
+    void enqueue(string bagID){
         Node* newNode = new Node(bagID);
         if (isEmpty()){
             head = newNode;
@@ -235,7 +220,7 @@ class Queues{
         size++;
     }
 
-    string dequeue() {
+    string dequeue(){
         if (isEmpty()){return "Empty";}
         string bagID = head -> val; 
         Node* temp = head;       
@@ -244,12 +229,13 @@ class Queues{
         temp = nullptr;            
         size--;
         if (isEmpty()){tail = nullptr;} 
+        if (head == nullptr){tail = nullptr;}
         return bagID; 
     }
 
-    bool isEmpty() {return size == 0;}
+    bool isEmpty(){return size == 0;}
 
-    string peek() {
+    string peek(){
         if (isEmpty()) {return "";}
         return head -> val; 
     }
@@ -258,14 +244,14 @@ class Queues{
 };
 
 
-class Bags{
+class Bags{ 
     private: 
     string overheadBinArray[118] = {}; //array to keep track of bags in overhead bins
     LinkedList baggageCarousel; //holds all luggage on baggage carousel
     LinkedList unclaimedBaggage; //holds all unclaimed baggage
     LinkedList priorityBagList; //holds all the bags that've been checked in as a priority bag
     LinkedList carryOns; //holds all the bags that've been registered as carryons
-    LinkedList checkedInBags; //holds all the bags that've been checked in 
+    LinkedList checkedInBags; //holds all the bags that've been checked in the entire time
     Stacks onPlaneStack; //holds all the bags that've been placed on under plane
     Queues priorityQueue; //queue for checkedin bags that have priority
     Queues regularQueue; //queue for checkedin bags that don't have priority
@@ -282,6 +268,7 @@ class Bags{
         if (baggageCarousel.isEmpty()){return true;}
         else{return false;}
     }
+
     void createArray(){
         for (int i = 0; i < 118; i++){overheadBinArray[i] = " ";}
     }
@@ -295,15 +282,14 @@ class Bags{
         else{cerr << "Error: Unable to open log file." << endl;}
     }
 
-    void addToCheckedInBags(string bagID){
-        checkedInBags.addToListEnd(bagID);
-    }
+    void addToCheckedInBags(string bagID){checkedInBags.addToListEnd(bagID);}
 
     void randomBagEvents(string bagID){
         int event = rand() % 100;
-        if (event < 5){ cout << "Oh no! Bag ID: " << bagID << " has been damaged!" << endl;} 
+        if (event < 5){cout << "Oh no! Bag ID: " << bagID << " has been damaged!" << endl;} 
         else if (event < 10){
             cout << "Alert! Bag ID: " << bagID << " has been misplaced and added to unclaimed baggage." << endl;
+            onPlaneStack.pop();
             addBagToUnclaimedList(bagID);
         } 
         else{
@@ -324,21 +310,23 @@ class Bags{
     void moveFromPriorityToPlane(){
         while (priorityQueue.getSize() != 0){
             string bag = priorityQueue.peek();
-            cout << "Bag ID: " << bag <<  "Moved from Priority Queue to Security Check." << endl;
+            priorityQueue.dequeue();
+            cout << "Bag ID: " << bag <<  " Moved from Priority Queue to Security Check." << endl;
             CheckedBagSecurityCheck(bag);
-            onPlaneStack.push(priorityQueue.dequeue());
-            cout << "Bag ID: " << bag <<  "Moved from Security Check to Plane." << endl;
+            onPlaneStack.push(bag);
+            cout << "Bag ID: " << bag <<  " Moved from Security Check to Plane." << endl;
             updateStatus(bag, "On Plane");
         }
     }
 
     void moveFromRegularToPlane(){
         while (regularQueue.getSize() != 0){
-            string bag = priorityQueue.peek();
-            cout << "Bag ID: " << bag <<  "Moved from Checked Bag Queue to Security Check." << endl;
+            string bag = regularQueue.peek();
+            regularQueue.dequeue();
+            cout << "Bag ID: " << bag <<  " Moved from Checked Bag Queue to Security Check." << endl;
             CheckedBagSecurityCheck(bag);
-            onPlaneStack.push(regularQueue.dequeue());
-            cout << "Bag ID: " << bag <<  "Moved from Security Check to Plane." << endl;
+            onPlaneStack.push(bag);
+            cout << "Bag ID: " << bag <<  " Moved from Security Check to Plane." << endl;
             updateStatus(bag, "On Plane");
         }
     }
@@ -351,11 +339,9 @@ class Bags{
         }
     }
 
-    void addToCarryOns(string bagID){
-        carryOns.addToListEnd(bagID);
-    }
+    void addToCarryOns(string bagID){carryOns.addToListEnd(bagID);}
 
-    void checkIn(){//may or may not be done
+    void checkIn(){
         string bag;
         string response;
         cout << "Enter Bag ID: " << endl;
@@ -406,36 +392,33 @@ class Bags{
 
     }
 
-    string peekCarousel(){
-        return baggageCarousel.returnHead();
-    }
+    string peekCarousel(){return baggageCarousel.returnHead();}
 
-    void addToPriorityQueue(string bagID){ //done
+    void addToPriorityQueue(string bagID){
         priorityQueue.enqueue(bagID);
+        addToCheckedInBags(bagID);
         updateStatus(bagID, "Priority Queue");
     }
 
-    void addToRegularQueue(string bagID){ //done
+    void addToRegularQueue(string bagID){ 
         regularQueue.enqueue(bagID);
+        addToCheckedInBags(bagID);
         updateStatus(bagID, "Regular Checked Bag Queue");
     }
 
-    void addToCheckedBagsLoadedOnPlaneStack(string bagID){ // done
+    void addToCheckedBagsLoadedOnPlaneStack(string bagID){ 
         onPlaneStack.push(bagID);
         updateStatus(bagID, "On Plane");
     }
 
-    bool checkInCheckedInBags(string bagID){
-        if (checkedInBags.checkInList(bagID)){return true;}
-        else{return false;}
-    }
+    bool checkInCheckedInBags(string bagID) {return checkedInBags.checkInList(bagID);}
 
     bool checkInCarryOns(string bagID){
         if (carryOns.checkInList(bagID)){return true;}
         else{return false;}
     }
     
-    //Claude helped me with this function so it could be a bit more extensive?
+    //Claude helped me with this function so it could be a bit more extensive
     void CarryOnBagSecurityCheck(string bagID){ //technically done, but could be cooler
         bool prohibitedItem = false;
         updateStatus(bagID, "Security Check");
@@ -487,17 +470,18 @@ class Bags{
         }
     }
     
-    bool overheadBinSpace(){ //done
+    bool overheadBinSpace(){
         if (overheadBinArray[117] != " "){return false;}
         else{return true;}
     }
 
-    void addBagToOverheadBin(string bagID){ //done, but double check
+    void addBagToOverheadBin(string bagID){ 
         if (overheadBinSpace()){
             for (int i = 0; i < 118; i++){
                 if (overheadBinArray[i] == ""){
                     overheadBinArray[i] = bagID;
                     updateStatus(bagID, "In Overhead Bin");
+                    break;
                 }
             }
         }
@@ -509,45 +493,40 @@ class Bags{
         }
     }
 
-    void addBagToCarousel(string bagID){ //done
+    void addBagToCarousel(string bagID){ 
         baggageCarousel.addToListEnd(bagID);
         updateStatus(bagID, "Baggage Carousel");
     }
 
-    void removeBagFromCarousel(string bagID){ //done
-        baggageCarousel.removeBagFromList(bagID);
-        updateStatus(bagID, "Picked Up by Passenger");
-    }
+    void removeBagFromCarousel(string bagID){baggageCarousel.removeBagFromList(bagID);}
 
-    void addBagToUnclaimedList(string bagID){ //done
+    void addBagToUnclaimedList(string bagID){
         unclaimedBaggage.addToListEnd(bagID);
         updateStatus(bagID, "Unclaimed Baggage");
     }
 
-    void removeBagFromUnclaimedList(string bagID){ //done
+    void removeBagFromUnclaimedList(string bagID){
         unclaimedBaggage.removeBagFromList(bagID);
         updateStatus(bagID, "Picked Up by Passenger.");
     }
 
-    void checkForBagsLeftOnCarousel(){ //not done
+    void checkForBagsLeftOnCarousel(){ 
         if (baggageCarousel.isEmpty()){
             return;
         }
         else{
-
+            moveFromCarouselToUnclaimed(baggageCarousel.returnHead());
         }
     }
 
-    void moveHeadToEndCarousel(){
-        baggageCarousel.moveHeadToEnd();
-    }
+    void moveHeadToEndCarousel(){baggageCarousel.moveHeadToEnd();}
 
-    void moveFromCarouselToUnclaimed(string bagID){ //done
+    void moveFromCarouselToUnclaimed(string bagID){ 
         removeBagFromCarousel(bagID);
         addBagToUnclaimedList(bagID);
     }
 
-    void updateStatus(string bagID, string newLocation){ //done
+    void updateStatus(string bagID, string newLocation){
         bagStatusMap[bagID] = newLocation;
         if (newLocation == "On Plane"){notifyPassenger(bagID, "Plane");}
         else{notifyPassenger(bagID, newLocation);}
@@ -558,12 +537,12 @@ class Bags{
         } 
         else{cerr << "Error: Unable to open log file." << endl;}
     }
-    int getCarouselSize(){
-        return baggageCarousel.size();
-    }
-    void viewUnclaimedList(){unclaimedBaggage.viewList();} //done
 
-    bool checkInUnclaimedList(string bagID){//done
+    int getCarouselSize(){return baggageCarousel.size();}
+
+    void viewUnclaimedList(){unclaimedBaggage.viewList();}
+
+    bool checkInUnclaimedList(string bagID){
         if (unclaimedBaggage.checkInList(bagID)){return true;}
         else{return false;}
     }
@@ -575,15 +554,14 @@ class Bags{
         else {return "null";}
     }
 
-    void viewStatus(string bagID){ //done
+    void viewStatus(string bagID){
         if (bagStatusMap.find(bagID) != bagStatusMap.end()){ //Claude AI wrote this for me
             cout << "Bag ID: " << bagID << " - Current Status: " << bagStatusMap[bagID] << endl;
         } 
         else {cout << "No status found for Bag ID: " << bagID << endl;}
     }
 
-    void moveBagToEndOfCarousel(){
-    }
+    void moveBagToEndOfCarousel(){baggageCarousel.moveHeadToEnd();}
 
     void notifyPassenger(string bagID, string message){
         cout << "Passenger Notification: Bag " << bagID << " is now in the " << message << "." << endl;
@@ -594,7 +572,6 @@ Bags globalBags;
 
 class AirportEmployeeUI{
     private:
-    //LinkedList employeeLogins;
     map<string, string> employeeLogins;
 
     public: 
@@ -627,10 +604,12 @@ class AirportEmployeeUI{
         }
         
     }
+
     bool login(string user, string pass) { //ChatGPT wrote this function for me
         auto it = employeeLogins.find(user);
         return (it != employeeLogins.end() && it->second == pass);
     }
+
     void removeUser(string user) {//ChatGPT wrote this function for me
         if (user == "ADMIN") {
             cout << "You can't remove the admin user." << std::endl;
@@ -657,9 +636,10 @@ class AirportEmployeeUI{
         } 
         else {cout << "User " << user << " is not in the database." << endl;}
     }
-    void addUser(string user, string pass) {employeeLogins[user] = pass;} // done
 
-    void showMenu(){// done
+    void addUser(string user, string pass){employeeLogins[user] = pass;} 
+
+    void showMenu(){
         cout << "-----Employee Interface-----" << endl;
         cout << "1. Check in Bag(s)" << endl;
         cout << "2. Check Bag(s) Status & Location" << endl;
@@ -675,12 +655,10 @@ class AirportEmployeeUI{
         cout << "12. Exit" << endl;
     }
 
-    bool menuReponse(){// done
+    bool menuReponse(){
         string answer = "";
-        
         cout << "Enter the menu number for the item in which you are wanting to access" << endl;
         cin >> answer;
-
         if (answer == "12"){return true;}
         else if (answer == "1"){
             int numberOfBags;
@@ -736,7 +714,7 @@ class AirportEmployeeUI{
         return false;
     }
 
-    void showAdminMenu(){// done
+    void showAdminMenu(){
         cout << "-----Admin Interface-----" << endl;
         cout << "1. Check in Bag(s)" << endl;
         cout << "2. Check Bag(s) Status & Location" << endl;
@@ -753,14 +731,11 @@ class AirportEmployeeUI{
         cout << "13. Add New User" << endl;
     }
 
-
-    void menuOption1(int numberOfBags){ //done
-        for (int i = 0; i < numberOfBags; i++){
-            globalBags.checkIn();
-        }
+    void menuOption1(int numberOfBags){
+        for (int i = 0; i < numberOfBags; i++){globalBags.checkIn();}
     }
 
-    void menuOption2(int numberOfBags){ // done
+    void menuOption2(int numberOfBags){
         for (int i = 0; i < numberOfBags; i++){
             string bag;
             cout << "Enter Bag ID: ";
@@ -769,7 +744,7 @@ class AirportEmployeeUI{
         }
     }
 
-    void menuOption3(int numberOfBags){ // done
+    void menuOption3(int numberOfBags){ 
         for (int i = 0; i < numberOfBags; i++){
             string bag;
             string response;
@@ -789,14 +764,14 @@ class AirportEmployeeUI{
         }
     }
 
-    void menuOption4(int numberOfBags){// done
+    void menuOption4(int numberOfBags){
         for (int i = 0; i < numberOfBags; i++){
             cout << "When prompted, please enter what you'd like the bag to be changed to." << endl;
             globalBags.checkIn();
         }
     }
 
-    void menuOption5(int numberOfBags){//done?
+    void menuOption5(int numberOfBags){
         string bagID;
         for (int i = 0; i < numberOfBags; i++){
             cout << "Please enter one Bag ID: " << endl;
@@ -806,18 +781,13 @@ class AirportEmployeeUI{
         }
     }
 
-    void menuOption6(){globalBags.viewUnclaimedList();} // done
+    void menuOption6(){globalBags.viewUnclaimedList();} 
 
-    void menuOption7(){globalBags.viewCarousel();} // done
+    void menuOption7(){globalBags.viewCarousel();} 
 
-    void menuOption8(){
-        globalBags.moveFromPriorityToPlane();
-        
-    } 
+    void menuOption8(){globalBags.moveFromPriorityToPlane();} 
 
-    void menuOption9(){
-        globalBags.moveFromRegularToPlane();
-    } // done
+    void menuOption9(){globalBags.moveFromRegularToPlane();} 
 
     void menuOption11(){globalBags.moveFromPlaneToCarousel();}
 
@@ -833,9 +803,9 @@ class AirportEmployeeUI{
     }
 };
 
-class PassengerUI {
+class PassengerUI{
     public:
-    bool login(string bagID) {
+    bool login(string bagID){
         if (!globalBags.emptyCarryOnBags()){ 
             if (globalBags.checkInCarryOns(bagID)){
                 cout << "Login Successful!" << endl;
@@ -847,66 +817,50 @@ class PassengerUI {
             return false;
         } 
         else{
-            if (globalBags.checkInCheckedInBags(bagID)) {
+            if(globalBags.checkInCheckedInBags(bagID)){
                 cout << "Login Successful!" << endl;
                 return true;
             } 
-            else {
+            else{
                 cout << "Login Failed. Invalid Bag ID." << endl;
                 return false;
             }
         }
-
-        
-        
     }
 
-    void showMenu() {
+    void showMenu(){
         cout << "-----Passenger Interface-----" << endl;
         cout << "1. Check Bag Status" << endl;
-
         cout << "2. Check Unclaimed Baggage" << endl;
         cout << "3. Report Bag Concerns" << endl;
         cout << "4. Exit" << endl;
     }
 
-    void menuResponse(string bagID) {
-        while (true) {
+    void menuResponse(string bagID){
+        while (true){
             showMenu();
-            
             string choice;
             cout << "Enter your choice (1-5): ";
             cin >> choice;
-
-            if (choice == "1") {
-                checkBagStatus(bagID);
-            }
-            else if (choice == "2") {
-                checkUnclaimedBaggage(bagID);
-            }
-            else if (choice == "3") {
-                reportBagConcerns(bagID);
-            }
-            else if (choice == "4") {
+            if (choice == "1"){checkBagStatus(bagID);}
+            else if (choice == "2"){checkUnclaimedBaggage(bagID);}
+            else if (choice == "3"){reportBagConcerns(bagID);}
+            else if (choice == "4"){
                 cout << "Thank you for using our service. Goodbye!" << endl;
                 break;
             }
-            else {
-                cout << "Invalid choice. Please try again." << endl;
-            }
+            else{cout << "Invalid choice. Please try again." << endl;}
         }
     }
 
-    void checkBagStatus(string bagID) {
-        globalBags.viewStatus(bagID);
-    }
+    void checkBagStatus(string bagID){globalBags.viewStatus(bagID);}
 
-    void checkUnclaimedBaggage(string bagID) {
+    void checkUnclaimedBaggage(string bagID){
         cout << "Unclaimed Baggage List:" << endl;
         globalBags.checkInUnclaimedList(bagID);
     }
 
-    void reportBagConcerns(string bagID) {
+    void reportBagConcerns(string bagID){
         int choice;
         cout << "Bag Concerns Menu:" << endl;
         cout << "1. Bag is Missing" << endl;
@@ -915,7 +869,6 @@ class PassengerUI {
         cout << "4. Other Concerns" << endl;
         cout << "Enter your choice (1-4): ";
         cin >> choice;
-
         switch(choice) { //Claude AI wrote the switch cases fr me 
             case 1:
                 globalBags.addBagToUnclaimedList(bagID);
@@ -936,7 +889,7 @@ class PassengerUI {
         }
     }
 
-    void run() {
+    void run(){
         while (true){
             cout << "-----Passenger Login-----" << endl;
             string bagID;
@@ -951,7 +904,7 @@ class PassengerUI {
     }
 };
 
-class Simulation {
+class Simulation{ //clean
     private:
     static const int MAX_BAGS = 150; 
     string carryOnBags[MAX_BAGS];
@@ -961,7 +914,7 @@ class Simulation {
     AirportEmployeeUI ui;
 
     public:
-    void inputCarryOnBags() {
+    void inputCarryOnBags(){
         int numBags;
         cout << "How many Carry-On Bags will be processed?" << endl;
         while (true){
@@ -971,7 +924,7 @@ class Simulation {
             else{break;}
         }
         carryOnCount = numBags;
-        for (int i = 0; i < numBags; i++) {
+        for (int i = 0; i < numBags; i++){
             string bag;
             cout << "Enter Carry-On Bag ID " << i + 1 << ": ";
             cin >> bag;
@@ -979,10 +932,9 @@ class Simulation {
             globalBags.addToCarryOns(bag);
             globalBags.updateStatus(bag, "Carry On");
         }
-        
     }
 
-    void inputPriorityBags() {
+    void inputPriorityBags(){
         int numBags;
         cout << "How many Priority Bags will be processed?" << endl;
         while (true){
@@ -992,7 +944,7 @@ class Simulation {
             else{break;}
         }
         priorityCount = numBags;
-        for (int i = 0; i < numBags; i++) {
+        for (int i = 0; i < numBags; i++){
             string bag;
             cout << "Enter Priority Bag ID " << i + 1 << ": ";
             cin >> bag;
@@ -1011,8 +963,7 @@ class Simulation {
             else{break;}
         }
         regularCount = numBags;
-        
-        for (int i = 0; i < numBags; i++) {
+        for (int i = 0; i < numBags; i++){
             string bag;
             cout << "Enter Regular Bag ID " << i + 1 << ": ";
             cin >> bag;
@@ -1024,67 +975,57 @@ class Simulation {
 
     void processCarryOnBags(){
         cout << "--- Processing Carry-On Bags ---" << endl;
-        for (int i = 0; i < carryOnCount; i++) {
+        for (int i = 0; i < carryOnCount; i++){
             globalBags.CarryOnBagSecurityCheck(carryOnBags[i]);
             globalBags.addBagToOverheadBin(carryOnBags[i]);
             globalBags.updateStatus(carryOnBags[i], "Carry On with Passenger");
-            // Simulate small delay
             this_thread::sleep_for(chrono::milliseconds(500));
         }
     }
 
-    void processPriorityBags() {
+    void processPriorityBags(){
         cout << "--- Processing Priority Bags ---" << endl;
             ui.menuOption8();
-            // Simulate small delay
             this_thread::sleep_for(chrono::milliseconds(500));
     }
 
-    void processRegularBags() {
+    void processRegularBags(){
         cout << "--- Processing Regular Bags ---" << endl;
         ui.menuOption9();
         this_thread::sleep_for(chrono::milliseconds(500));
     }
 
-    void moveToCarousel() {
+    void moveToCarousel(){
         cout << "--- Moving Bags to Carousel ---" << endl;
         globalBags.moveFromPlaneToCarousel();
     }
 
-    void randomlyPickUpBags() {
+    void randomlyPickUpBags(){
         cout << "--- Picking Up Bags from Carousel ---" << endl;
-
-        // If the carousel is empty, exit the function
-        if (globalBags.isCarouselEmpty()) {
+        if (globalBags.isCarouselEmpty()){
             cout << "No bags on the carousel to pick up." << endl;
             return;
         }
-
-        int initialSize = globalBags.getCarouselSize(); // Assume this method exists
-
-        // Iterate through the carousel based on its initial size
+        int initialSize = globalBags.getCarouselSize(); 
         for (int i = 0; i < initialSize; i++) {
-            string bagID = globalBags.peekCarousel(); // Get the first bag on the carousel
-            int randomChance = rand() % 100;         // Generate a random number between 0 and 99
-
-            if (randomChance < 95) { // 95% chance the bag is picked up
+            string bagID = globalBags.peekCarousel(); 
+            int randomChance = rand() % 100;        
+            if (randomChance < 95){ 
                 cout << "Bag ID: " << bagID << " picked up by passenger." << endl;
-                globalBags.removeBagFromCarousel(bagID); // Remove the bag from the carousel
-            } else {
+                globalBags.removeBagFromCarousel(bagID); 
+            } 
+            else{
                 cout << "Bag ID: " << bagID << " remains on the carousel." << endl;
-                globalBags.moveHeadToEndCarousel(); // Move the head node to the end of the list
+                cout << "Bag ID: " << bagID << " moved to unclaimed baggage." << endl;
+                globalBags.moveFromCarouselToUnclaimed(bagID);
             }
         }
     }
 
-
-
-
-    void checkAndMoveToUnclaimedBags() {
+    void checkAndMoveToUnclaimedBags(){
         cout << "--- Checking for Unclaimed Bags on Carousel ---" << endl;
         string bagID;
-        while (!globalBags.emptyCheckedInBags()) {
-            // Check the status of each bag on the carousel
+        while (!globalBags.emptyCheckedInBags()){
             bagID = globalBags.peekCarousel();
             cout << "Bag ID: " << bagID << " still on the carousel. Moving to unclaimed baggage." << endl;
             globalBags.moveFromCarouselToUnclaimed(bagID);
@@ -1092,30 +1033,26 @@ class Simulation {
     }
 
     void runSimulation(){
-        // Reset counts
         carryOnCount = 0;
         priorityCount = 0;
         regularCount = 0;
 
-        // Input all bag types
         inputCarryOnBags();
         inputPriorityBags();
         inputRegularBags();
 
-        // Process bags
         processCarryOnBags();
         processRegularBags();
         processPriorityBags();
 
-        // Move to carousel
         moveToCarousel();
         randomlyPickUpBags();
-        checkAndMoveToUnclaimedBags();
-        // Log simulation completion
+
         cout << "--- Simulation Complete ---" << endl;
         globalBags.logEvent("Full Baggage Handling Simulation Completed");
     }
 };
+
 
 
 int main(){
@@ -1127,8 +1064,6 @@ int main(){
     globalBags.createArray();
 
     employeeUI.addUser("ADMIN", "Pass123"); //creates admin account
-
-
     while (true){
         cout << "1. Employee Login" << endl;
         cout << "2. Passenger Login" << endl;
@@ -1142,5 +1077,6 @@ int main(){
         else if(response == "4"){break;}
         else{cout << "Invalid Reponse." << endl;}
     }
+    
     return 0;
 }
