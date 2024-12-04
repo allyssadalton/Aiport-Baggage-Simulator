@@ -6,7 +6,6 @@
 #include <thread> 
 #include <chrono>
 #include <fstream>
-#include <cassert>
 
 using namespace std;
 
@@ -906,7 +905,7 @@ class PassengerUI{
     }
 };
 
-class Simulation{ //clean
+class Simulation{
     private:
     static const int MAX_BAGS = 150; 
     string carryOnBags[MAX_BAGS];
@@ -1054,7 +1053,6 @@ class Simulation{ //clean
         globalBags.logEvent("Full Baggage Handling Simulation Completed");
     }
 };
-
 
 int main(){
     srand(time(nullptr));
