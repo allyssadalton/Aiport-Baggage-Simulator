@@ -1056,7 +1056,6 @@ class Simulation{ //clean
 };
 
 
-
 int main(){
     srand(time(nullptr));
     AirportEmployeeUI employeeUI;
